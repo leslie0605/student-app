@@ -1,23 +1,74 @@
 
-export interface MagicalTool {
+// Tool categories and their statuses
+export type ToolCategory = 'lor' | 'cv' | 'sop' | 'phs' | 'language' | 'gpa';
+export type ToolStatus = 'not-started' | 'in-progress' | 'completed';
+
+// Letters of Recommendation types
+export interface Recommender {
   id: string;
   name: string;
-  description: string;
-  type: 'wand' | 'potion' | 'book' | 'artifact';
-  rarity: 'common' | 'uncommon' | 'rare' | 'legendary';
-  power: number; // 1-10 rating
-  acquired: boolean;
-  image?: string;
+  email: string;
+  institution: string;
+  relationship: string;
+  status: 'requested' | 'in-progress' | 'submitted';
+  dateRequested?: string;
+  dateSubmitted?: string;
+  notes?: string;
 }
 
-export interface ToolType {
+// CV/Resume types
+export interface CVVersion {
   id: string;
-  name: 'wand' | 'potion' | 'book' | 'artifact';
-  description: string;
+  name: string;
+  dateCreated: string;
+  dateModified: string;
+  file?: File | null;
+  fileUrl?: string;
+  score?: number;
+  feedback?: string[];
 }
 
-export interface ToolRarity {
+// Statement of Purpose types
+export interface SoPVersion {
   id: string;
-  name: 'common' | 'uncommon' | 'rare' | 'legendary';
-  color: string;
+  name: string;
+  targetUniversity?: string;
+  targetProgram?: string;
+  dateCreated: string;
+  dateModified: string;
+  file?: File | null;
+  fileUrl?: string;
+  score?: number;
+  feedback?: string[];
+}
+
+// Personal History Statement types
+export interface PHSVersion {
+  id: string;
+  name: string;
+  targetUniversity?: string;
+  targetProgram?: string;
+  dateCreated: string;
+  dateModified: string;
+  file?: File | null;
+  fileUrl?: string;
+  score?: number;
+  feedback?: string[];
+}
+
+// Chat Message type for "Ask a PhD Mentor" feature
+export interface ChatMessage {
+  id: string;
+  sender: 'user' | 'mentor';
+  message: string;
+  timestamp: string;
+}
+
+// Tool interface for the Magical Tools
+export interface MagicalTool {
+  id: ToolCategory;
+  name: string;
+  description: string;
+  status: ToolStatus;
+  icon: string;
 }
