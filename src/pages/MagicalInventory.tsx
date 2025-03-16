@@ -25,22 +25,22 @@ const MagicalInventory = () => {
     // Handle navigation based on tool ID
     switch(toolId) {
       case 'lor':
-        navigate('/magical-inventory/lor');
+        navigate('/inventory/lor');
         break;
       case 'cv':
-        navigate('/magical-inventory/cv');
+        navigate('/inventory/cv');
         break;
       case 'sop':
-        navigate('/magical-inventory/sop');
+        navigate('/inventory/sop');
         break;
       case 'phs':
-        navigate('/magical-inventory/phs');
+        navigate('/inventory/phs');
         break;
       case 'language':
-        navigate('/magical-inventory/language');
+        navigate('/inventory/language');
         break;
       case 'gpa':
-        navigate('/magical-inventory/gpa');
+        navigate('/inventory/gpa');
         break;
       default:
         toast({
