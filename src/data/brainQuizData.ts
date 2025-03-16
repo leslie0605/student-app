@@ -19,49 +19,109 @@ export const brainRegions: BrainRegion[] = [
     id: "frontal-lobe",
     name: "Frontal Lobe",
     description: "Responsible for executive functions, decision making, planning, and personality.",
-    coordinates: { x: 20, y: 40 }
+    coordinates: { x: 74, y: 25 }
   },
   {
     id: "parietal-lobe",
     name: "Parietal Lobe",
     description: "Processes sensory information and helps with spatial awareness and navigation.",
-    coordinates: { x: 50, y: 30 }
+    coordinates: { x: 34, y: 25 }
   },
   {
     id: "temporal-lobe",
     name: "Temporal Lobe",
     description: "Involved in auditory processing, language comprehension, and memory formation.",
-    coordinates: { x: 35, y: 60 }
+    coordinates: { x: 63, y: 54 }
   },
   {
     id: "occipital-lobe",
     name: "Occipital Lobe",
     description: "The visual processing center of the brain.",
-    coordinates: { x: 80, y: 50 }
+    coordinates: { x: 20, y: 42 }
   },
   {
     id: "cerebellum",
     name: "Cerebellum",
     description: "Coordinates muscle movements and maintains balance and posture.",
-    coordinates: { x: 75, y: 80 }
-  },
-  {
-    id: "amygdala",
-    name: "Amygdala",
-    description: "Processes emotions, especially fear and threat responses.",
-    coordinates: { x: 45, y: 65 }
+    coordinates: { x: 26, y: 63 }
   },
   {
     id: "hippocampus",
     name: "Hippocampus",
     description: "Crucial for forming new memories and spatial navigation.",
-    coordinates: { x: 50, y: 70 }
+    coordinates: { x: 27, y: 48 }
+  },
+  {
+    id: "amygdala",
+    name: "Amygdala",
+    description: "Processes emotions, especially fear and threat responses.",
+    coordinates: { x: 47, y: 48 }
   },
   {
     id: "brainstem",
     name: "Brainstem",
     description: "Controls basic life functions like breathing, heart rate, and sleep cycles.",
-    coordinates: { x: 60, y: 90 }
+    coordinates: { x: 39, y: 70 }
+  },
+  {
+    id: "hypothalamus",
+    name: "Hypothalamus",
+    description: "Regulates body temperature, hunger, thirst, and circadian rhythms.",
+    coordinates: { x: 57, y: 43 }
+  },
+  {
+    id: "thalamus",
+    name: "Thalamus",
+    description: "Relays sensory and motor signals to the cerebral cortex.",
+    coordinates: { x: 50, y: 37 }
+  },
+  {
+    id: "cingulate-gyrus",
+    name: "Cingulate Gyrus",
+    description: "Involved in emotion formation and processing, learning, and memory.",
+    coordinates: { x: 57, y: 26 }
+  },
+  {
+    id: "corpus-callosum",
+    name: "Corpus Callosum",
+    description: "Connects the left and right cerebral hemispheres, allowing communication between them.",
+    coordinates: { x: 40, y: 29 }
+  },
+  {
+    id: "basal-ganglia",
+    name: "Basal Ganglia",
+    description: "Involved in control of voluntary motor movements, procedural learning, and routine behaviors.",
+    coordinates: { x: 18, y: 31 }
+  },
+  {
+    id: "cerebrum",
+    name: "Cerebrum",
+    description: "The largest part of the brain, responsible for higher brain functions like thinking and action.",
+    coordinates: { x: 38, y: 14 }
+  },
+  {
+    id: "meninges",
+    name: "Meninges",
+    description: "Protective membranes that cover the brain and spinal cord.",
+    coordinates: { x: 17, y: 19 }
+  },
+  {
+    id: "cerebrospinal-fluid",
+    name: "Cerebrospinal Fluid",
+    description: "Clear fluid that surrounds the brain and spinal cord, providing cushioning and nutrients.",
+    coordinates: { x: 57, y: 63 }
+  },
+  {
+    id: "blood-brain-barrier",
+    name: "Blood-Brain Barrier",
+    description: "Highly selective semipermeable border that separates the circulating blood from the brain.",
+    coordinates: { x: 70, y: 10 }
+  },
+  {
+    id: "spinal-cord",
+    name: "Spinal Cord",
+    description: "Extension of the central nervous system that transmits neural signals between the brain and the body.",
+    coordinates: { x: 32, y: 83 }
   }
 ];
 
@@ -121,5 +181,19 @@ export const quizQuestions: QuizQuestion[] = [
     explanation: "The parietal lobe integrates sensory information and helps create our sense of body position in space (proprioception). When this processing is disrupted or we're distracted, we can momentarily lose track of where exactly our limbs are without visual confirmation. This region's functioning explains why we can touch our nose with our eyes closed (when it's working well) or why we might misjudge and bump into things (when it's not).",
     correctRegion: "parietal-lobe",
     options: ["parietal-lobe", "occipital-lobe", "frontal-lobe", "temporal-lobe"]
+  },
+  {
+    id: 9,
+    question: "Why do we feel hungry at certain times of the day?",
+    explanation: "The hypothalamus regulates many biological functions including hunger and satiety. It monitors blood glucose levels and responds to hormones like ghrelin (which increases hunger) and leptin (which decreases it). The hypothalamus also helps maintain our circadian rhythms, which is why we tend to feel hungry at regular times even without external cues.",
+    correctRegion: "hypothalamus",
+    options: ["hypothalamus", "thalamus", "cerebellum", "amygdala"]
+  },
+  {
+    id: 10,
+    question: "Why do we sometimes feel emotional during movies or when reading books?",
+    explanation: "The cingulate gyrus plays a key role in emotion formation and processing. When we engage with emotional content, this region activates, allowing us to empathize with characters and situations even though we know they're not real. This emotional processing helps us learn from others' experiences without having to live through them ourselves.",
+    correctRegion: "cingulate-gyrus",
+    options: ["cingulate-gyrus", "temporal-lobe", "corpus-callosum", "meninges"]
   }
 ];

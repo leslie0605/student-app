@@ -79,6 +79,11 @@ const QuizGame = () => {
     }
   };
 
+  // Filter brain regions for display options (only show those in the current question options)
+  const displayRegions = currentQuestion 
+    ? brainRegions.filter(region => currentQuestion.options.includes(region.id))
+    : [];
+
   // Find the selected and correct brain region objects
   const selectedRegionObject = selectedRegion ? 
     brainRegions.find(region => region.id === selectedRegion) || null : null;
