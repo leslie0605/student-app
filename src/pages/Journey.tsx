@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { Calendar as CalendarIcon, MapPin, Map } from 'lucide-react';
 import { toast } from 'sonner';
@@ -12,16 +12,26 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import ProgressBar from '@/components/ProgressBar';
 import JourneyCalendarView from '@/components/journey/JourneyCalendarView';
 import JourneyRoadmapView from '@/components/journey/JourneyRoadmapView';
-import { fetchApplicationTasks } from '@/services/journeyService';
+import { fetchApplicationTasks, toggleTaskCompletion } from '@/services/journeyService';
 
 const Journey = () => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [viewMode, setViewMode] = useState<'calendar' | 'roadmap'>('calendar');
+  const queryClient = useQueryClient();
   
   // Fetch application tasks
   const { data: applicationTasks = [], isLoading } = useQuery({
     queryKey: ['applicationTasks'],
     queryFn: fetchApplicationTasks,
+  });
+  
+  // Toggle task completion mutation
+  const toggleTaskMutation = useMutation({
+    mutationFn: ({ taskId, completed }: { taskId: string; completed: boolean }) => 
+      toggleTaskCompletion(taskId, completed),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['applicationTasks'] });
+    },
   });
   
   // Calculate progress
@@ -30,8 +40,17 @@ const Journey = () => {
   const progressPercentage = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
   
   const handleTaskToggle = (taskId: string, completed: boolean) => {
-    // This would typically update the server in a real application
-    toast.success(`Task ${completed ? 'completed' : 'uncompleted'}!`);
+    toggleTaskMutation.mutate(
+      { taskId, completed },
+      {
+        onSuccess: () => {
+          toast.success(`Task ${completed ? 'completed' : 'uncompleted'}!`);
+        },
+        onError: () => {
+          toast.error("Failed to update task status");
+        }
+      }
+    );
   };
 
   return (
