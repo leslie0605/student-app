@@ -2,6 +2,7 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { BrainRegion } from '@/data/brainQuizData';
+import { Button } from '@/components/ui/button';
 
 interface BrainDiagramProps {
   regions: BrainRegion[];
@@ -27,33 +28,36 @@ const BrainDiagram: React.FC<BrainDiagramProps> = ({
         className="w-full h-auto rounded-lg"
       />
       
-      {regions.map((region) => (
-        <button
-          key={region.id}
-          onClick={() => !disabled && onRegionClick(region.id)}
-          disabled={disabled}
-          style={{
-            position: 'absolute',
-            left: `${region.coordinates.x}%`,
-            top: `${region.coordinates.y}%`,
-            transform: 'translate(-50%, -50%)',
-          }}
-          className={cn(
-            "w-8 h-8 rounded-full flex items-center justify-center transition-all-300 text-xs font-medium",
-            "hover:scale-110 focus:outline-none focus:ring-2 focus:ring-magic-purple focus:ring-offset-2",
-            disabled ? "cursor-default" : "cursor-pointer",
-            region.id === selectedRegion 
-              ? "bg-magic-pink text-white shadow-lg scale-110" 
-              : region.id === correctRegion && selectedRegion 
-                ? "bg-green-500 text-white shadow-lg scale-110" 
-                : "bg-white/80 text-magic-dark shadow hover:shadow-md hover:bg-white"
-          )}
-          aria-label={region.name}
-          title={region.name}
-        >
-          <span className="text-[10px] pointer-events-none">{region.id.charAt(0).toUpperCase()}</span>
-        </button>
-      ))}
+      {/* Display brain region options as rectangular buttons */}
+      <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+        {regions.map((region) => (
+          <Button
+            key={region.id}
+            onClick={() => !disabled && onRegionClick(region.id)}
+            disabled={disabled}
+            variant={
+              region.id === selectedRegion 
+                ? "default" 
+                : region.id === correctRegion && selectedRegion 
+                  ? "outline" 
+                  : "secondary"
+            }
+            className={cn(
+              "text-xs sm:text-sm p-2 h-auto transition-all duration-300",
+              "focus:outline-none focus:ring-2 focus:ring-magic-purple focus:ring-offset-2",
+              region.id === selectedRegion 
+                ? "bg-magic-pink text-white shadow-lg" 
+                : region.id === correctRegion && selectedRegion 
+                  ? "bg-green-500 text-white border-green-600" 
+                  : "hover:bg-magic-purple/10"
+            )}
+            aria-label={region.name}
+            title={region.name}
+          >
+            {region.name}
+          </Button>
+        ))}
+      </div>
     </div>
   );
 };

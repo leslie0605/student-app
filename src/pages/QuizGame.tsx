@@ -79,7 +79,7 @@ const QuizGame = () => {
     }
   };
 
-  // Filter brain regions for display options (only show those in the current question options)
+  // Get brain regions for the current question's options
   const displayRegions = currentQuestion 
     ? brainRegions.filter(region => currentQuestion.options.includes(region.id))
     : [];
@@ -131,11 +131,11 @@ const QuizGame = () => {
             <div className="p-6 rounded-xl glass-effect shadow-lg border border-magic-blue/20">
               <h2 className="text-xl font-bold mb-4">Question {currentQuestionIndex + 1}:</h2>
               <p className="text-lg mb-4">{currentQuestion.question}</p>
-              <p className="text-sm text-muted-foreground">Click on the brain region you think is responsible:</p>
+              <p className="text-sm text-muted-foreground">Select the brain region you think is responsible:</p>
             </div>
             
             <BrainDiagram 
-              regions={brainRegions}
+              regions={displayRegions}
               selectedRegion={selectedRegion}
               correctRegion={showFeedback ? correctRegion : null}
               onRegionClick={handleRegionClick}
