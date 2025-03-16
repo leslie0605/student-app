@@ -5,26 +5,18 @@ import { useNavigate } from 'react-router-dom';
 import MainNavbar from '@/components/MainNavbar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { ChevronLeft, Upload, FileText, BarChart, FileCheck } from 'lucide-react';
-import { fetchSoPVersions, fetchChatMessages } from '@/services/inventoryService';
-import { SoPVersion, ChatMessage } from '@/types/inventory';
-import MentorChat from '@/components/inventory/MentorChat';
+import { ChevronLeft, Upload, FileText, FileCheck } from 'lucide-react';
+import { fetchSoPVersions } from '@/services/inventoryService';
+import { SoPVersion } from '@/types/inventory';
 
 const SopPage = () => {
   const navigate = useNavigate();
   const [sopVersions, setSopVersions] = useState<SoPVersion[]>([]);
-  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   
   // Fetch SoP versions
   const { isLoading: isLoadingSoP, data: sopData } = useQuery({
     queryKey: ['sop-versions'],
     queryFn: fetchSoPVersions
-  });
-  
-  // Fetch chat messages for the SoP tool
-  const { isLoading: isLoadingChat, data: chatData } = useQuery({
-    queryKey: ['chat-messages', 'sop'],
-    queryFn: () => fetchChatMessages('sop')
   });
   
   // Update state when data is fetched
@@ -33,16 +25,6 @@ const SopPage = () => {
       setSopVersions(sopData);
     }
   }, [sopData]);
-  
-  useEffect(() => {
-    if (chatData) {
-      setChatMessages(chatData);
-    }
-  }, [chatData]);
-  
-  const handleNewMessage = (message: ChatMessage) => {
-    setChatMessages(prev => [...prev, message]);
-  };
   
   return (
     <div className="min-h-screen bg-gradient-to-b from-magic-light to-white">
@@ -152,23 +134,6 @@ const SopPage = () => {
           
           <div className="lg:col-span-3">
             <div className="space-y-6 sticky top-24">
-              <Card className="border border-magic-blue/10 shadow-sm">
-                <CardContent className="p-6">
-                  <h3 className="text-xl font-semibold mb-4">Help Resources</h3>
-                  <div className="space-y-4">
-                    <p className="text-sm text-muted-foreground">
-                      Need guidance on writing a compelling Statement of Purpose? Ask our PhD Mentor!
-                    </p>
-                    <MentorChat 
-                      toolId="sop" 
-                      messages={chatMessages}
-                      onNewMessage={handleNewMessage}
-                      isLoading={isLoadingChat}
-                    />
-                  </div>
-                </CardContent>
-              </Card>
-              
               <Card className="border border-magic-blue/10 shadow-sm">
                 <CardContent className="p-6">
                   <h3 className="text-xl font-semibold mb-4">SoP Tips</h3>

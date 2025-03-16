@@ -5,26 +5,18 @@ import { useNavigate } from 'react-router-dom';
 import MainNavbar from '@/components/MainNavbar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { ChevronLeft, Upload, FileText, BarChart, FileCheck } from 'lucide-react';
-import { fetchPHSVersions, fetchChatMessages } from '@/services/inventoryService';
-import { PHSVersion, ChatMessage } from '@/types/inventory';
-import MentorChat from '@/components/inventory/MentorChat';
+import { ChevronLeft, Upload, FileText, FileCheck } from 'lucide-react';
+import { fetchPHSVersions } from '@/services/inventoryService';
+import { PHSVersion } from '@/types/inventory';
 
 const PhsPage = () => {
   const navigate = useNavigate();
   const [phsVersions, setPhsVersions] = useState<PHSVersion[]>([]);
-  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   
   // Fetch PHS versions
   const { isLoading: isLoadingPHS, data: phsData } = useQuery({
     queryKey: ['phs-versions'],
     queryFn: fetchPHSVersions
-  });
-  
-  // Fetch chat messages for the PHS tool
-  const { isLoading: isLoadingChat, data: chatData } = useQuery({
-    queryKey: ['chat-messages', 'phs'],
-    queryFn: () => fetchChatMessages('phs')
   });
   
   // Update state when data is fetched
@@ -33,16 +25,6 @@ const PhsPage = () => {
       setPhsVersions(phsData);
     }
   }, [phsData]);
-  
-  useEffect(() => {
-    if (chatData) {
-      setChatMessages(chatData);
-    }
-  }, [chatData]);
-  
-  const handleNewMessage = (message: ChatMessage) => {
-    setChatMessages(prev => [...prev, message]);
-  };
   
   return (
     <div className="min-h-screen bg-gradient-to-b from-magic-light to-white">
@@ -152,23 +134,6 @@ const PhsPage = () => {
           
           <div className="lg:col-span-3">
             <div className="space-y-6 sticky top-24">
-              <Card className="border border-magic-blue/10 shadow-sm">
-                <CardContent className="p-6">
-                  <h3 className="text-xl font-semibold mb-4">Help Resources</h3>
-                  <div className="space-y-4">
-                    <p className="text-sm text-muted-foreground">
-                      Need guidance on writing a compelling Personal History Statement? Ask our PhD Mentor!
-                    </p>
-                    <MentorChat 
-                      toolId="phs" 
-                      messages={chatMessages}
-                      onNewMessage={handleNewMessage}
-                      isLoading={isLoadingChat}
-                    />
-                  </div>
-                </CardContent>
-              </Card>
-              
               <Card className="border border-magic-blue/10 shadow-sm">
                 <CardContent className="p-6">
                   <h3 className="text-xl font-semibold mb-4">PHS Tips</h3>

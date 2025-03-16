@@ -6,27 +6,19 @@ import MainNavbar from '@/components/MainNavbar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { ChevronLeft } from 'lucide-react';
-import { fetchRecommenders, fetchChatMessages } from '@/services/inventoryService';
-import { Recommender, ChatMessage } from '@/types/inventory';
+import { fetchRecommenders } from '@/services/inventoryService';
+import { Recommender } from '@/types/inventory';
 import RecommenderDashboard from '@/components/inventory/lor/RecommenderDashboard';
-import MentorChat from '@/components/inventory/MentorChat';
 import LetterTemplate from '@/components/inventory/lor/LetterTemplate';
 
 const LorPage = () => {
   const navigate = useNavigate();
   const [recommenders, setRecommenders] = useState<Recommender[]>([]);
-  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   
   // Fetch recommenders data
   const { isLoading: isLoadingRecommenders, data: recommendersData } = useQuery({
     queryKey: ['recommenders'],
     queryFn: fetchRecommenders
-  });
-  
-  // Fetch chat messages for the LoR tool
-  const { isLoading: isLoadingChat, data: chatData } = useQuery({
-    queryKey: ['chat-messages', 'lor'],
-    queryFn: () => fetchChatMessages('lor')
   });
   
   // Update state when data is fetched
@@ -36,12 +28,6 @@ const LorPage = () => {
     }
   }, [recommendersData]);
   
-  useEffect(() => {
-    if (chatData) {
-      setChatMessages(chatData);
-    }
-  }, [chatData]);
-  
   const handleAddRecommender = (recommender: Recommender) => {
     setRecommenders(prev => [...prev, recommender]);
   };
@@ -50,10 +36,6 @@ const LorPage = () => {
     setRecommenders(prev => 
       prev.map(rec => rec.id === id ? { ...rec, status } : rec)
     );
-  };
-  
-  const handleNewMessage = (message: ChatMessage) => {
-    setChatMessages(prev => [...prev, message]);
   };
   
   return (
@@ -99,23 +81,6 @@ const LorPage = () => {
           
           <div className="lg:col-span-3">
             <div className="space-y-6 sticky top-24">
-              <Card className="border border-magic-blue/10 shadow-sm">
-                <CardContent className="p-6">
-                  <h3 className="text-xl font-semibold mb-4">Help Resources</h3>
-                  <div className="space-y-4">
-                    <p className="text-sm text-muted-foreground">
-                      Need guidance on how to approach your recommenders or what makes a good recommendation letter? Ask our PhD Mentor!
-                    </p>
-                    <MentorChat 
-                      toolId="lor" 
-                      messages={chatMessages}
-                      onNewMessage={handleNewMessage}
-                      isLoading={isLoadingChat}
-                    />
-                  </div>
-                </CardContent>
-              </Card>
-              
               <Card className="border border-magic-blue/10 shadow-sm">
                 <CardContent className="p-6">
                   <h3 className="text-xl font-semibold mb-4">Letter Tips</h3>

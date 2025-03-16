@@ -6,26 +6,18 @@ import MainNavbar from '@/components/MainNavbar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { ChevronLeft } from 'lucide-react';
-import { fetchCVVersions, fetchChatMessages } from '@/services/inventoryService';
-import { CVVersion, ChatMessage } from '@/types/inventory';
+import { fetchCVVersions } from '@/services/inventoryService';
+import { CVVersion } from '@/types/inventory';
 import CVDashboard from '@/components/inventory/cv/CVDashboard';
-import MentorChat from '@/components/inventory/MentorChat';
 
 const CvPage = () => {
   const navigate = useNavigate();
   const [cvVersions, setCvVersions] = useState<CVVersion[]>([]);
-  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   
   // Fetch CV versions
   const { isLoading: isLoadingCV, data: cvData } = useQuery({
     queryKey: ['cv-versions'],
     queryFn: fetchCVVersions
-  });
-  
-  // Fetch chat messages for the CV tool
-  const { isLoading: isLoadingChat, data: chatData } = useQuery({
-    queryKey: ['chat-messages', 'cv'],
-    queryFn: () => fetchChatMessages('cv')
   });
   
   // Update state when data is fetched
@@ -35,18 +27,8 @@ const CvPage = () => {
     }
   }, [cvData]);
   
-  useEffect(() => {
-    if (chatData) {
-      setChatMessages(chatData);
-    }
-  }, [chatData]);
-  
   const handleAddVersion = (version: CVVersion) => {
     setCvVersions(prev => [...prev, version]);
-  };
-  
-  const handleNewMessage = (message: ChatMessage) => {
-    setChatMessages(prev => [...prev, message]);
   };
   
   return (
@@ -78,23 +60,6 @@ const CvPage = () => {
           
           <div className="lg:col-span-3">
             <div className="space-y-6 sticky top-24">
-              <Card className="border border-magic-blue/10 shadow-sm">
-                <CardContent className="p-6">
-                  <h3 className="text-xl font-semibold mb-4">Help Resources</h3>
-                  <div className="space-y-4">
-                    <p className="text-sm text-muted-foreground">
-                      Need guidance on formatting your CV for academic applications? Ask our PhD Mentor!
-                    </p>
-                    <MentorChat 
-                      toolId="cv" 
-                      messages={chatMessages}
-                      onNewMessage={handleNewMessage}
-                      isLoading={isLoadingChat}
-                    />
-                  </div>
-                </CardContent>
-              </Card>
-              
               <Card className="border border-magic-blue/10 shadow-sm">
                 <CardContent className="p-6">
                   <h3 className="text-xl font-semibold mb-4">CV Tips</h3>
