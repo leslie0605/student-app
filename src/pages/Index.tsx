@@ -2,7 +2,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import MainNavbar from '@/components/MainNavbar';
-import { Brain, MapPin, Briefcase, ArrowRight } from 'lucide-react';
+import { MapPin, Briefcase, ArrowRight, BookOpen } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const Index = () => {
@@ -10,10 +10,10 @@ const Index = () => {
 
   const features = [
     {
-      icon: <Brain className="h-8 w-8 text-magic-blue" />,
-      title: "Brain Quiz Game",
-      description: "Test your knowledge of neuroscience and learn how different brain regions affect everyday experiences.",
-      path: "/quiz-game"
+      icon: <BookOpen className="h-8 w-8 text-magic-purple" />,
+      title: "Magical Tools Inventory",
+      description: "Discover and organize magical tools to aid your graduate school application journey.",
+      path: "/magical-inventory"
     },
     {
       icon: <MapPin className="h-8 w-8 text-magic-purple" />,
@@ -53,7 +53,7 @@ const Index = () => {
           
           <div className="flex flex-wrap justify-center gap-4 animate-fade-up" style={{ animationDelay: '0.3s' }}>
             <button 
-              onClick={() => navigate('/quiz-game')}
+              onClick={() => navigate('/magical-inventory')}
               className={cn(
                 "py-3 px-8 rounded-lg font-medium transition-all-200 shadow-md",
                 "bg-gradient-to-r from-magic-blue to-magic-purple text-white",
@@ -62,7 +62,7 @@ const Index = () => {
                 "flex items-center gap-2"
               )}
             >
-              Game Start! <ArrowRight className="h-5 w-5" />
+              Explore Tools! <ArrowRight className="h-5 w-5" />
             </button>
           </div>
         </div>
@@ -103,7 +103,7 @@ const Index = () => {
         <div className="container mx-auto text-center">
           <h2 className="text-2xl md:text-3xl font-bold mb-6">Ready to Start Your Journey?</h2>
           <button 
-            onClick={() => navigate('/quiz-game')}
+            onClick={() => navigate('/magical-inventory')}
             className={cn(
               "py-3 px-8 rounded-lg font-medium transition-all-200 shadow-md",
               "bg-gradient-to-r from-magic-blue to-magic-purple text-white",
@@ -112,7 +112,7 @@ const Index = () => {
               "flex items-center gap-2 mx-auto"
             )}
           >
-            Start Brain Quiz <Brain className="h-5 w-5" />
+            Explore Magical Tools <BookOpen className="h-5 w-5" />
           </button>
         </div>
       </section>
