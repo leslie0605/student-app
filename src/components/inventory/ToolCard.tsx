@@ -4,7 +4,7 @@ import { MagicalTool } from '@/types/inventory';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Wand2, Flask, BookOpen, Sparkles, Star } from 'lucide-react';
+import { Wand2, Beaker, BookOpen, Sparkles, Star } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface ToolCardProps {
@@ -19,7 +19,7 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, onToggleAcquired }) => {
       case 'wand':
         return <Wand2 className="h-5 w-5" />;
       case 'potion':
-        return <Flask className="h-5 w-5" />;
+        return <Beaker className="h-5 w-5" />;
       case 'book':
         return <BookOpen className="h-5 w-5" />;
       case 'artifact':
