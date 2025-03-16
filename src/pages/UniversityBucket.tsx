@@ -14,10 +14,10 @@ const UniversityBucket = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   
-  // Filter states
-  const [selectedField, setSelectedField] = useState<string>('');
-  const [selectedLocation, setSelectedLocation] = useState<string>('');
-  const [programType, setProgramType] = useState<string>('');
+  // Filter states with valid default values
+  const [selectedField, setSelectedField] = useState<string>("all");
+  const [selectedLocation, setSelectedLocation] = useState<string>("all");
+  const [programType, setProgramType] = useState<string>("all");
   
   // Fetch universities, fields, and locations
   const { data: universities = [], isLoading: isUnisLoading } = useQuery({
@@ -66,15 +66,15 @@ const UniversityBucket = () => {
     let matchesLocation = true;
     let matchesProgramType = true;
     
-    if (selectedField) {
+    if (selectedField && selectedField !== 'all') {
       matchesField = university.fields.includes(selectedField);
     }
     
-    if (selectedLocation) {
+    if (selectedLocation && selectedLocation !== 'all') {
       matchesLocation = university.location === selectedLocation;
     }
     
-    if (programType) {
+    if (programType && programType !== 'all') {
       matchesProgramType = university.programType === programType || university.programType === 'Both';
     }
     
