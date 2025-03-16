@@ -106,3 +106,17 @@ export const toggleTaskCompletion = async (
     }, 500);
   });
 };
+
+// Function to add a new application task
+export const addApplicationTask = async (task: Omit<ApplicationTask, 'id'>): Promise<ApplicationTask> => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      const newTask = {
+        ...task,
+        id: `task-${Date.now()}`
+      };
+      mockApplicationTasks.push(newTask);
+      resolve(newTask);
+    }, 500);
+  });
+};
