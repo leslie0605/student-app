@@ -6,7 +6,9 @@ import {
   SoPVersion, 
   PHSVersion,
   ChatMessage,
-  ToolStatus
+  ToolStatus,
+  ToolType,
+  ToolRarity
 } from '@/types/inventory';
 
 // Mock data for the tools
@@ -53,6 +55,22 @@ const mockTools: MagicalTool[] = [
     status: 'not-started',
     icon: 'calculator'
   }
+];
+
+// Mock data for tool types
+const mockToolTypes: ToolType[] = [
+  { id: 'wand', name: 'wand' },
+  { id: 'potion', name: 'potion' },
+  { id: 'book', name: 'book' },
+  { id: 'artifact', name: 'artifact' }
+];
+
+// Mock data for tool rarities
+const mockToolRarities: ToolRarity[] = [
+  { id: 'common', name: 'common' },
+  { id: 'uncommon', name: 'uncommon' },
+  { id: 'rare', name: 'rare' },
+  { id: 'legendary', name: 'legendary' }
 ];
 
 // Mock data for recommenders
@@ -185,16 +203,34 @@ export const fetchMagicalTools = async (): Promise<MagicalTool[]> => {
   });
 };
 
-// Function to update tool status
-export const updateToolStatus = async (
+// Function to fetch tool types
+export const fetchToolTypes = async (): Promise<ToolType[]> => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(mockToolTypes);
+    }, 800);
+  });
+};
+
+// Function to fetch tool rarities
+export const fetchToolRarities = async (): Promise<ToolRarity[]> => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(mockToolRarities);
+    }, 800);
+  });
+};
+
+// Function to toggle tool acquired status (this is a placeholder as our tools don't have an acquired property)
+export const toggleToolAcquired = async (
   toolId: string,
-  status: ToolStatus
+  acquired: boolean
 ): Promise<MagicalTool> => {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
       const toolIndex = mockTools.findIndex(t => t.id === toolId);
       if (toolIndex >= 0) {
-        mockTools[toolIndex].status = status;
+        // Just return the tool as is since we don't have an acquired property
         resolve(mockTools[toolIndex]);
       } else {
         reject(new Error('Tool not found'));

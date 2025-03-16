@@ -7,7 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Send, MessageCircleHelp } from 'lucide-react';
+import { Send, MessageCircle } from 'lucide-react';
 import { addChatMessage, getMentorResponse } from '@/services/inventoryService';
 import { useToast } from '@/components/ui/use-toast';
 
@@ -73,7 +73,7 @@ const MentorChat: React.FC<MentorChatProps> = ({ toolId, messages, onNewMessage 
     <>
       <CardHeader>
         <CardTitle className="flex items-center space-x-2">
-          <MessageCircleHelp className="h-6 w-6 text-primary" />
+          <MessageCircle className="h-6 w-6 text-primary" />
           <span>PhD Mentor Chat</span>
         </CardTitle>
       </CardHeader>
@@ -81,7 +81,7 @@ const MentorChat: React.FC<MentorChatProps> = ({ toolId, messages, onNewMessage 
         <ScrollArea className="h-[400px] pr-4">
           {messages.length === 0 ? (
             <div className="text-center text-muted-foreground py-8">
-              <MessageCircleHelp className="h-12 w-12 mx-auto mb-4 opacity-20" />
+              <MessageCircle className="h-12 w-12 mx-auto mb-4 opacity-20" />
               <p>No messages yet. Ask your PhD mentor a question!</p>
             </div>
           ) : (
@@ -150,7 +150,7 @@ const MentorChat: React.FC<MentorChatProps> = ({ toolId, messages, onNewMessage 
     <Sheet>
       <SheetTrigger asChild>
         <Button variant="outline" className="gap-2">
-          <MessageCircleHelp className="h-4 w-4" />
+          <MessageCircle className="h-4 w-4" />
           Ask a PhD Mentor
         </Button>
       </SheetTrigger>

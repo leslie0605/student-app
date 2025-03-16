@@ -3,6 +3,18 @@
 export type ToolCategory = 'lor' | 'cv' | 'sop' | 'phs' | 'language' | 'gpa';
 export type ToolStatus = 'not-started' | 'in-progress' | 'completed';
 
+// Tool types
+export interface ToolType {
+  id: string;
+  name: string;
+}
+
+// Tool rarities
+export interface ToolRarity {
+  id: string;
+  name: string;
+}
+
 // Letters of Recommendation types
 export interface Recommender {
   id: string;

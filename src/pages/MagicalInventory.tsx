@@ -5,7 +5,7 @@ import MainNavbar from '@/components/MainNavbar';
 import ToolFilter from '@/components/inventory/ToolFilter';
 import ToolGrid from '@/components/inventory/ToolGrid';
 import AcquiredTools from '@/components/inventory/AcquiredTools';
-import { fetchMagicalTools, fetchToolTypes, fetchToolRarities, toggleToolAcquired } from '@/services/inventoryService';
+import { fetchMagicalTools, updateToolStatus } from '@/services/inventoryService';
 import { MagicalTool } from '@/types/inventory';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/components/ui/use-toast';
@@ -17,33 +17,27 @@ const MagicalInventory = () => {
   // Filter states
   const [selectedType, setSelectedType] = useState<string>("all");
   const [selectedRarity, setSelectedRarity] = useState<string>("all");
-  const [acquisitionStatus, setAcquisitionStatus] = useState<string>("all");
+  const [toolStatus, setToolStatus] = useState<string>("all");
   
-  // Fetch data
+  // Fetch tools data
   const { data: tools = [], isLoading: isToolsLoading } = useQuery({
     queryKey: ['magical-tools'],
     queryFn: fetchMagicalTools
   });
   
-  const { data: types = [], isLoading: isTypesLoading } = useQuery({
-    queryKey: ['tool-types'],
-    queryFn: fetchToolTypes
-  });
+  // Empty types and rarities since we're not using them in this version
+  const types: Array<{ id: string; name: string }> = [];
+  const rarities: Array<{ id: string; name: string }> = [];
   
-  const { data: rarities = [], isLoading: isRaritiesLoading } = useQuery({
-    queryKey: ['tool-rarities'],
-    queryFn: fetchToolRarities
-  });
-  
-  // Mutation for toggling acquisition status
-  const toggleAcquiredMutation = useMutation({
-    mutationFn: ({ toolId, acquired }: { toolId: string; acquired: boolean }) => 
-      toggleToolAcquired(toolId, acquired),
+  // Mutation for updating tool status
+  const updateToolStatusMutation = useMutation({
+    mutationFn: ({ toolId, status }: { toolId: string; status: string }) => 
+      updateToolStatus(toolId, status as any),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['magical-tools'] });
       toast({
         title: 'Success!',
-        description: 'Tool acquisition status updated.',
+        description: 'Tool status updated.',
       });
     },
     onError: (error) => {
@@ -55,34 +49,25 @@ const MagicalInventory = () => {
     }
   });
   
-  // Handle toggling tool acquisition status
+  // Handle toggling tool status (placeholder function)
   const handleToggleAcquired = (toolId: string, acquired: boolean) => {
-    toggleAcquiredMutation.mutate({ toolId, acquired });
+    // In our implementation we'll just redirect to the specific tool page
+    console.log(`Tool ${toolId} clicked`);
   };
   
-  // Filter tools based on selected criteria
+  // Filter tools based on selected status
   const filteredTools = tools.filter(tool => {
-    let matchesType = true;
-    let matchesRarity = true;
-    let matchesAcquisition = true;
+    let matchesStatus = true;
     
-    if (selectedType && selectedType !== 'all') {
-      matchesType = tool.type === selectedType;
+    if (toolStatus && toolStatus !== 'all') {
+      matchesStatus = tool.status === toolStatus;
     }
     
-    if (selectedRarity && selectedRarity !== 'all') {
-      matchesRarity = tool.rarity === selectedRarity;
-    }
-    
-    if (acquisitionStatus && acquisitionStatus !== 'all') {
-      matchesAcquisition = acquisitionStatus === 'acquired' ? tool.acquired : !tool.acquired;
-    }
-    
-    return matchesType && matchesRarity && matchesAcquisition;
+    return matchesStatus;
   });
   
-  // Get acquired tools
-  const acquiredTools = tools.filter(tool => tool.acquired);
+  // Get completed tools
+  const completedTools = tools.filter(tool => tool.status === 'completed');
   
   return (
     <div className="min-h-screen bg-gradient-to-b from-magic-light to-white">
@@ -94,15 +79,15 @@ const MagicalInventory = () => {
             Magical Tools Inventory
           </h1>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            Discover and collect magical tools to aid your graduate school journey.
-            Track your arsenal and unlock new possibilities.
+            Discover and use magical tools to aid your graduate school journey.
+            Track your progress and unlock new possibilities.
           </p>
         </div>
         
         <Tabs defaultValue="browse" className="w-full">
           <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 mb-8">
             <TabsTrigger value="browse">Browse</TabsTrigger>
-            <TabsTrigger value="inventory">My Inventory</TabsTrigger>
+            <TabsTrigger value="completed">Completed</TabsTrigger>
           </TabsList>
           
           <TabsContent value="browse">
@@ -111,11 +96,11 @@ const MagicalInventory = () => {
               rarities={rarities}
               selectedType={selectedType}
               selectedRarity={selectedRarity}
-              acquisitionStatus={acquisitionStatus}
+              acquisitionStatus={toolStatus}
               onTypeChange={setSelectedType}
               onRarityChange={setSelectedRarity}
-              onAcquisitionStatusChange={setAcquisitionStatus}
-              isLoading={isTypesLoading || isRaritiesLoading}
+              onAcquisitionStatusChange={setToolStatus}
+              isLoading={isToolsLoading}
             />
             
             <ToolGrid
@@ -125,9 +110,9 @@ const MagicalInventory = () => {
             />
           </TabsContent>
           
-          <TabsContent value="inventory">
+          <TabsContent value="completed">
             <AcquiredTools
-              tools={acquiredTools}
+              tools={completedTools}
               onToggleAcquired={handleToggleAcquired}
               isLoading={isToolsLoading}
             />

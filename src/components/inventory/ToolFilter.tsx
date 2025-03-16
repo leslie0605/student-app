@@ -1,6 +1,5 @@
 
 import React from 'react';
-import { ToolType, ToolRarity } from '@/types/inventory';
 import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
@@ -8,8 +7,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Wand2, Beaker, BookOpen, Sparkles } from 'lucide-react';
 
 interface ToolFilterProps {
-  types: ToolType[];
-  rarities: ToolRarity[];
+  types: Array<{ id: string; name: string }>;
+  rarities: Array<{ id: string; name: string }>;
   selectedType: string;
   selectedRarity: string;
   acquisitionStatus: string;
@@ -111,8 +110,9 @@ const ToolFilter: React.FC<ToolFilterProps> = ({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Status</SelectItem>
-                <SelectItem value="acquired">Acquired</SelectItem>
-                <SelectItem value="not-acquired">Not Acquired</SelectItem>
+                <SelectItem value="not-started">Not Started</SelectItem>
+                <SelectItem value="in-progress">In Progress</SelectItem>
+                <SelectItem value="completed">Completed</SelectItem>
               </SelectContent>
             </Select>
           </div>
