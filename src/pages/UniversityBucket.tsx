@@ -5,10 +5,12 @@ import MainNavbar from '@/components/MainNavbar';
 import UniversityFilter from '@/components/university/UniversityFilter';
 import UniversityGrid from '@/components/university/UniversityGrid';
 import SavedUniversities from '@/components/university/SavedUniversities';
-import { fetchUniversities, fetchFields, fetchLocations, toggleUniversitySaved } from '@/services/universityService';
+import { fetchUniversities, fetchFields, fetchLocations, toggleUniversitySaved, createApplicationTask } from '@/services/universityService';
 import { University, Field, Location } from '@/types/university';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/components/ui/use-toast';
+import { addApplicationTask } from '@/services/journeyService';
+import { ApplicationTask } from '@/types/journey';
 
 const UniversityBucket = () => {
   const { toast } = useToast();
@@ -35,16 +37,55 @@ const UniversityBucket = () => {
     queryFn: fetchLocations
   });
   
+  // Mutation for creating application tasks
+  const createTaskMutation = useMutation({
+    mutationFn: (university: University) => {
+      const task: Omit<ApplicationTask, 'id'> = {
+        title: `Submit ${university.name} application`,
+        description: `Complete and submit application to ${university.name}.`,
+        dueDate: university.applicationDeadline || new Date().toISOString(),
+        completed: false,
+        category: 'Submissions',
+        university: university.name,
+        priority: 'high'
+      };
+      return addApplicationTask(task);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['applicationTasks'] });
+    }
+  });
+  
   // Mutation for toggling saved status
   const toggleSavedMutation = useMutation({
     mutationFn: ({ universityId, saved }: { universityId: string; saved: boolean }) => 
       toggleUniversitySaved(universityId, saved),
-    onSuccess: () => {
+    onSuccess: (updatedUniversity, { saved }) => {
       queryClient.invalidateQueries({ queryKey: ['universities'] });
-      toast({
-        title: 'Success!',
-        description: 'University bucket updated.',
-      });
+      
+      // If university was saved (not removed), create a task for it
+      if (saved) {
+        createTaskMutation.mutate(updatedUniversity, {
+          onSuccess: () => {
+            toast({
+              title: 'Success!',
+              description: 'University added to your bucket and application task created in your journey.',
+            });
+          },
+          onError: () => {
+            toast({
+              title: 'Warning',
+              description: 'University added to bucket, but failed to create application task.',
+              variant: 'destructive',
+            });
+          }
+        });
+      } else {
+        toast({
+          title: 'Success!',
+          description: 'University removed from your bucket.',
+        });
+      }
     },
     onError: (error) => {
       toast({

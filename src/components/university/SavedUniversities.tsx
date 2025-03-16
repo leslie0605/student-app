@@ -7,8 +7,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { format } from 'date-fns';
 import { BookmarkX, GraduationCap, Calendar, ExternalLink, BookmarkPlus, Bookmark } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { createApplicationTask } from '@/services/universityService';
 import { useToast } from '@/components/ui/use-toast';
 
 interface SavedUniversitiesProps {
@@ -23,26 +21,6 @@ const SavedUniversities: React.FC<SavedUniversitiesProps> = ({
   isLoading
 }) => {
   const { toast } = useToast();
-  const queryClient = useQueryClient();
-  
-  // Mutation for creating application tasks
-  const createTaskMutation = useMutation({
-    mutationFn: (universityId: string) => createApplicationTask(universityId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['applicationTasks'] });
-      toast({
-        title: 'Task Created',
-        description: 'Application task added to your journey.',
-      });
-    },
-    onError: () => {
-      toast({
-        title: 'Error',
-        description: 'Failed to create application task.',
-        variant: 'destructive',
-      });
-    }
-  });
   
   if (isLoading) {
     return (
@@ -133,14 +111,6 @@ const SavedUniversities: React.FC<SavedUniversitiesProps> = ({
                   </TableCell>
                   <TableCell>
                     <div className="flex gap-2">
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        onClick={() => createTaskMutation.mutate(university.id)}
-                        disabled={createTaskMutation.isPending}
-                      >
-                        Add to Tasks
-                      </Button>
                       <Button 
                         variant="ghost" 
                         size="icon"
