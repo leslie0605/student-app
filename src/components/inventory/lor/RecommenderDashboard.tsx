@@ -74,8 +74,14 @@ const RecommenderDashboard: React.FC<RecommenderDashboardProps> = ({
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
+      // Fix: Ensure all required properties are passed as non-optional
       const newRecommender = await addRecommender({
-        ...values,
+        name: values.name,
+        email: values.email,
+        institution: values.institution,
+        relationship: values.relationship,
+        status: values.status,
+        notes: values.notes,
         dateRequested: new Date().toISOString().split('T')[0],
       });
       

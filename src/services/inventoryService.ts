@@ -1,4 +1,3 @@
-
 import { 
   MagicalTool, 
   Recommender, 
@@ -218,6 +217,24 @@ export const fetchToolRarities = async (): Promise<ToolRarity[]> => {
     setTimeout(() => {
       resolve(mockToolRarities);
     }, 800);
+  });
+};
+
+// Add the missing updateToolStatus function
+export const updateToolStatus = async (
+  toolId: string,
+  status: ToolStatus
+): Promise<MagicalTool> => {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      const toolIndex = mockTools.findIndex(t => t.id === toolId);
+      if (toolIndex >= 0) {
+        mockTools[toolIndex].status = status;
+        resolve(mockTools[toolIndex]);
+      } else {
+        reject(new Error('Tool not found'));
+      }
+    }, 500);
   });
 };
 
