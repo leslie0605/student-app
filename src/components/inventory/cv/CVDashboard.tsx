@@ -35,6 +35,8 @@ interface CVDashboardProps {
 const CVDashboard: React.FC<CVDashboardProps> = ({ cvVersions }) => {
   const [versions] = useState<CVVersion[]>(cvVersions);
   const { toast } = useToast();
+  const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false);
+  const [isNewVersionDialogOpen, setIsNewVersionDialogOpen] = useState(false);
   
   const handleFileUpload = () => {
     // Mock implementation - in a real app, this would handle file upload
@@ -71,7 +73,7 @@ const CVDashboard: React.FC<CVDashboardProps> = ({ cvVersions }) => {
       <div className="flex justify-between items-center">
         <h3 className="text-xl font-semibold">CV/Resume Dashboard</h3>
         <div className="flex space-x-2">
-          <Dialog>
+          <Dialog open={isUploadDialogOpen} onOpenChange={setIsUploadDialogOpen}>
             <DialogTrigger asChild>
               <Button variant="outline" className="gap-2">
                 <Upload className="h-4 w-4" />
@@ -105,7 +107,7 @@ const CVDashboard: React.FC<CVDashboardProps> = ({ cvVersions }) => {
             </DialogContent>
           </Dialog>
           
-          <Dialog>
+          <Dialog open={isNewVersionDialogOpen} onOpenChange={setIsNewVersionDialogOpen}>
             <DialogTrigger asChild>
               <Button className="gap-2">
                 <Plus className="h-4 w-4" />
@@ -138,12 +140,34 @@ const CVDashboard: React.FC<CVDashboardProps> = ({ cvVersions }) => {
             <p className="text-muted-foreground text-sm max-w-md text-center mb-6">
               Upload your first CV to get started with formatting and evaluation.
             </p>
-            <DialogTrigger asChild>
-              <Button onClick={() => {}}>
-                <Upload className="h-4 w-4 mr-2" />
-                Upload Your First CV
-              </Button>
-            </DialogTrigger>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button onClick={() => setIsUploadDialogOpen(true)}>
+                  <Upload className="h-4 w-4 mr-2" />
+                  Upload Your First CV
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Upload CV/Resume</DialogTitle>
+                  <DialogDescription>
+                    Upload your current CV or resume. Supported formats: PDF, DOCX.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="py-6">
+                  <div className="border-2 border-dashed rounded-lg p-12 flex flex-col items-center justify-center">
+                    <FileText className="h-12 w-12 text-muted-foreground mb-4" />
+                    <p className="mb-2 text-sm text-center">
+                      Drag and drop your CV here, or click to browse
+                    </p>
+                    <p className="text-xs text-muted-foreground mb-4">
+                      PDF or DOCX, up to 5MB
+                    </p>
+                    <Button onClick={handleFileUpload}>Select File</Button>
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
           </CardContent>
         </Card>
       ) : (
