@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import MainNavbar from '@/components/MainNavbar';
@@ -18,18 +18,29 @@ const LorPage = () => {
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   
   // Fetch recommenders data
-  const { isLoading: isLoadingRecommenders } = useQuery({
+  const { isLoading: isLoadingRecommenders, data: recommendersData } = useQuery({
     queryKey: ['recommenders'],
-    queryFn: fetchRecommenders,
-    onSuccess: (data) => setRecommenders(data)
+    queryFn: fetchRecommenders
   });
   
   // Fetch chat messages for the LoR tool
-  const { isLoading: isLoadingChat } = useQuery({
+  const { isLoading: isLoadingChat, data: chatData } = useQuery({
     queryKey: ['chat-messages', 'lor'],
-    queryFn: () => fetchChatMessages('lor'),
-    onSuccess: (data) => setChatMessages(data)
+    queryFn: () => fetchChatMessages('lor')
   });
+  
+  // Update state when data is fetched
+  useEffect(() => {
+    if (recommendersData) {
+      setRecommenders(recommendersData);
+    }
+  }, [recommendersData]);
+  
+  useEffect(() => {
+    if (chatData) {
+      setChatMessages(chatData);
+    }
+  }, [chatData]);
   
   const handleAddRecommender = (recommender: Recommender) => {
     setRecommenders(prev => [...prev, recommender]);

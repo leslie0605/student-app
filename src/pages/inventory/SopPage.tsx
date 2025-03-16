@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import MainNavbar from '@/components/MainNavbar';
@@ -16,18 +16,29 @@ const SopPage = () => {
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   
   // Fetch SoP versions
-  const { isLoading: isLoadingSoP } = useQuery({
+  const { isLoading: isLoadingSoP, data: sopData } = useQuery({
     queryKey: ['sop-versions'],
-    queryFn: fetchSoPVersions,
-    onSuccess: (data) => setSopVersions(data)
+    queryFn: fetchSoPVersions
   });
   
   // Fetch chat messages for the SoP tool
-  const { isLoading: isLoadingChat } = useQuery({
+  const { isLoading: isLoadingChat, data: chatData } = useQuery({
     queryKey: ['chat-messages', 'sop'],
-    queryFn: () => fetchChatMessages('sop'),
-    onSuccess: (data) => setChatMessages(data)
+    queryFn: () => fetchChatMessages('sop')
   });
+  
+  // Update state when data is fetched
+  useEffect(() => {
+    if (sopData) {
+      setSopVersions(sopData);
+    }
+  }, [sopData]);
+  
+  useEffect(() => {
+    if (chatData) {
+      setChatMessages(chatData);
+    }
+  }, [chatData]);
   
   const handleNewMessage = (message: ChatMessage) => {
     setChatMessages(prev => [...prev, message]);

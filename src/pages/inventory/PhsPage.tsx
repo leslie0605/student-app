@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import MainNavbar from '@/components/MainNavbar';
@@ -16,18 +16,29 @@ const PhsPage = () => {
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   
   // Fetch PHS versions
-  const { isLoading: isLoadingPHS } = useQuery({
+  const { isLoading: isLoadingPHS, data: phsData } = useQuery({
     queryKey: ['phs-versions'],
-    queryFn: fetchPHSVersions,
-    onSuccess: (data) => setPhsVersions(data)
+    queryFn: fetchPHSVersions
   });
   
   // Fetch chat messages for the PHS tool
-  const { isLoading: isLoadingChat } = useQuery({
+  const { isLoading: isLoadingChat, data: chatData } = useQuery({
     queryKey: ['chat-messages', 'phs'],
-    queryFn: () => fetchChatMessages('phs'),
-    onSuccess: (data) => setChatMessages(data)
+    queryFn: () => fetchChatMessages('phs')
   });
+  
+  // Update state when data is fetched
+  useEffect(() => {
+    if (phsData) {
+      setPhsVersions(phsData);
+    }
+  }, [phsData]);
+  
+  useEffect(() => {
+    if (chatData) {
+      setChatMessages(chatData);
+    }
+  }, [chatData]);
   
   const handleNewMessage = (message: ChatMessage) => {
     setChatMessages(prev => [...prev, message]);

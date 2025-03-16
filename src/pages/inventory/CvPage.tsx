@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import MainNavbar from '@/components/MainNavbar';
@@ -17,18 +17,29 @@ const CvPage = () => {
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   
   // Fetch CV versions
-  const { isLoading: isLoadingCV } = useQuery({
+  const { isLoading: isLoadingCV, data: cvData } = useQuery({
     queryKey: ['cv-versions'],
-    queryFn: fetchCVVersions,
-    onSuccess: (data) => setCvVersions(data)
+    queryFn: fetchCVVersions
   });
   
   // Fetch chat messages for the CV tool
-  const { isLoading: isLoadingChat } = useQuery({
+  const { isLoading: isLoadingChat, data: chatData } = useQuery({
     queryKey: ['chat-messages', 'cv'],
-    queryFn: () => fetchChatMessages('cv'),
-    onSuccess: (data) => setChatMessages(data)
+    queryFn: () => fetchChatMessages('cv')
   });
+  
+  // Update state when data is fetched
+  useEffect(() => {
+    if (cvData) {
+      setCvVersions(cvData);
+    }
+  }, [cvData]);
+  
+  useEffect(() => {
+    if (chatData) {
+      setChatMessages(chatData);
+    }
+  }, [chatData]);
   
   const handleAddVersion = (version: CVVersion) => {
     setCvVersions(prev => [...prev, version]);
