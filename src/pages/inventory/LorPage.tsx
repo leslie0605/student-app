@@ -10,6 +10,7 @@ import { fetchRecommenders } from '@/services/inventoryService';
 import { Recommender } from '@/types/inventory';
 import RecommenderDashboard from '@/components/inventory/lor/RecommenderDashboard';
 import LetterTemplate from '@/components/inventory/lor/LetterTemplate';
+import MentorChatButton from '@/components/mentor/MentorChatButton';
 
 const LorPage = () => {
   const navigate = useNavigate();
@@ -96,6 +97,7 @@ const LorPage = () => {
           </div>
         </div>
       </div>
+      <MentorChatButton />
     </div>
   );
 };

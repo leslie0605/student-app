@@ -8,6 +8,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { ChevronLeft, Upload, FileText, FileCheck } from 'lucide-react';
 import { fetchPHSVersions } from '@/services/inventoryService';
 import { PHSVersion } from '@/types/inventory';
+import MentorChatButton from '@/components/mentor/MentorChatButton';
 
 const PhsPage = () => {
   const navigate = useNavigate();
@@ -150,6 +151,7 @@ const PhsPage = () => {
           </div>
         </div>
       </div>
+      <MentorChatButton />
     </div>
   );
 };
