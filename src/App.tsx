@@ -11,6 +11,14 @@ import UniversityBucket from "./pages/UniversityBucket";
 import MagicalInventory from "./pages/MagicalInventory";
 import NotFound from "./pages/NotFound";
 
+// Import specific tool pages
+import LorPage from "./pages/inventory/LorPage";
+import CvPage from "./pages/inventory/CvPage";
+import SopPage from "./pages/inventory/SopPage";
+import PhsPage from "./pages/inventory/PhsPage";
+import LanguagePage from "./pages/inventory/LanguagePage";
+import GpaPage from "./pages/inventory/GpaPage";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -25,6 +33,15 @@ const App = () => (
           <Route path="/journey" element={<Journey />} />
           <Route path="/uni-bucket" element={<UniversityBucket />} />
           <Route path="/magical-inventory" element={<MagicalInventory />} />
+          
+          {/* Tool-specific routes */}
+          <Route path="/magical-inventory/lor" element={<LorPage />} />
+          <Route path="/magical-inventory/cv" element={<CvPage />} />
+          <Route path="/magical-inventory/sop" element={<SopPage />} />
+          <Route path="/magical-inventory/phs" element={<PhsPage />} />
+          <Route path="/magical-inventory/language" element={<LanguagePage />} />
+          <Route path="/magical-inventory/gpa" element={<GpaPage />} />
+          
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

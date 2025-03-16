@@ -36,11 +36,13 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useToast } from '@/components/ui/use-toast';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface RecommenderDashboardProps {
   recommenders: Recommender[];
   onAddRecommender: (recommender: Recommender) => void;
   onUpdateStatus: (id: string, status: Recommender['status']) => void;
+  isLoading?: boolean;
 }
 
 const formSchema = z.object({
@@ -55,7 +57,8 @@ const formSchema = z.object({
 const RecommenderDashboard: React.FC<RecommenderDashboardProps> = ({ 
   recommenders, 
   onAddRecommender,
-  onUpdateStatus 
+  onUpdateStatus,
+  isLoading = false
 }) => {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const { toast } = useToast();
@@ -74,14 +77,14 @@ const RecommenderDashboard: React.FC<RecommenderDashboardProps> = ({
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      // Fix: Ensure all required properties are passed as non-optional
+      // Create a recommender object with all required fields
       const newRecommender = await addRecommender({
         name: values.name,
         email: values.email,
         institution: values.institution,
         relationship: values.relationship,
         status: values.status,
-        notes: values.notes,
+        notes: values.notes || "",
         dateRequested: new Date().toISOString().split('T')[0],
       });
       
@@ -140,6 +143,50 @@ const RecommenderDashboard: React.FC<RecommenderDashboardProps> = ({
       .join('')
       .toUpperCase();
   };
+
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="flex justify-between items-center">
+          <Skeleton className="h-8 w-48" />
+          <Skeleton className="h-10 w-40" />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {[1, 2].map((i) => (
+            <Card key={i} className="overflow-hidden">
+              <CardHeader className="bg-muted/30 pb-4">
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center space-x-3">
+                    <Skeleton className="h-10 w-10 rounded-full" />
+                    <div>
+                      <Skeleton className="h-5 w-32 mb-1" />
+                      <Skeleton className="h-4 w-24" />
+                    </div>
+                  </div>
+                  <Skeleton className="h-6 w-20" />
+                </div>
+              </CardHeader>
+              <CardContent className="pt-4">
+                <div className="space-y-4">
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-3/4" />
+                  <div className="pt-2">
+                    <Skeleton className="h-5 w-32 mb-2" />
+                    <div className="flex space-x-2">
+                      <Skeleton className="h-8 w-full" />
+                      <Skeleton className="h-8 w-full" />
+                      <Skeleton className="h-8 w-full" />
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -274,12 +321,10 @@ const RecommenderDashboard: React.FC<RecommenderDashboardProps> = ({
             <p className="text-muted-foreground text-sm max-w-md text-center mb-6">
               Add your first recommender to start tracking your letters of recommendation.
             </p>
-            <DialogTrigger asChild>
-              <Button onClick={() => setIsAddDialogOpen(true)}>
-                <Plus className="h-4 w-4 mr-2" />
-                Add Your First Recommender
-              </Button>
-            </DialogTrigger>
+            <Button onClick={() => setIsAddDialogOpen(true)}>
+              <Plus className="h-4 w-4 mr-2" />
+              Add Your First Recommender
+            </Button>
           </CardContent>
         </Card>
       ) : (

@@ -220,7 +220,7 @@ export const fetchToolRarities = async (): Promise<ToolRarity[]> => {
   });
 };
 
-// Add the missing updateToolStatus function
+// Function to update a tool's status
 export const updateToolStatus = async (
   toolId: string,
   status: ToolStatus
