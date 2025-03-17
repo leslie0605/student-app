@@ -7,45 +7,39 @@ import QuizFeedback from '@/components/QuizFeedback';
 import GameStats from '@/components/GameStats';
 import ResultsScreen, { QuizStats } from '@/components/ResultsScreen';
 import { toast } from 'sonner';
-import { Brain, ChevronLeft, Award, Trophy, Star, Badge } from 'lucide-react';
+import { Brain, ChevronLeft, Award, Trophy, Star, Badge, Sparkles } from 'lucide-react';
 
-// Define achievements
+// Define achievements with multiple levels
 const ACHIEVEMENTS = [
-  {
-    id: 'brain_beginner_1',
-    name: 'Brain Beginner Lv.1',
-    description: 'Answer 5 questions correctly',
+  // Brain Master achievements (Answer questions)
+  ...[5, 10, 15, 20, 25, 30, 35, 40, 45, 50].map((threshold, index) => ({
+    id: `brain_master_${index + 1}`,
+    name: 'Brain Master',
+    description: `Answer ${threshold} questions correctly`,
     icon: <Brain className="h-5 w-5 text-amber-500" />,
-    condition: (stats: QuizStats) => stats.totalCorrect >= 5
-  },
-  {
-    id: 'brain_explorer_1',
-    name: 'Brain Explorer Lv.1',
-    description: 'Complete 1 full quiz',
-    icon: <Trophy className="h-5 w-5 text-amber-500" />,
-    condition: (stats: QuizStats) => stats.completedQuizzes >= 1
-  },
-  {
-    id: 'brain_master_1',
-    name: 'Brain Master Lv.1',
-    description: 'Achieve a streak of 3 correct answers',
+    condition: (stats: QuizStats) => stats.totalCorrect >= threshold,
+    level: index + 1
+  })),
+
+  // XP Champ achievements (Total XP)
+  ...[50, 100, 150, 200, 250, 300, 350, 400, 450, 500].map((threshold, index) => ({
+    id: `xp_champ_${index + 1}`,
+    name: 'XP Champ',
+    description: `Earn ${threshold} XP total`,
+    icon: <Sparkles className="h-5 w-5 text-amber-500" />,
+    condition: (stats: QuizStats) => stats.totalXP >= threshold,
+    level: index + 1
+  })),
+
+  // Streak Legend achievements (Streak totals)
+  ...[5, 10, 15, 20, 25, 30, 35, 40, 45, 50].map((threshold, index) => ({
+    id: `streak_legend_${index + 1}`,
+    name: 'Streak Legend',
+    description: `Achieve a streak of ${threshold}`,
     icon: <Star className="h-5 w-5 text-amber-500" />,
-    condition: (stats: QuizStats) => stats.highestStreak >= 3
-  },
-  {
-    id: 'brain_genius_1',
-    name: 'Brain Genius Lv.1',
-    description: 'Earn 100 XP total',
-    icon: <Badge className="h-5 w-5 text-amber-500" />,
-    condition: (stats: QuizStats) => stats.totalXP >= 100
-  },
-  {
-    id: 'brain_expert_1',
-    name: 'Brain Expert Lv.1',
-    description: 'Get 90% correct in a quiz',
-    icon: <Award className="h-5 w-5 text-amber-500" />,
-    condition: (stats: QuizStats) => (stats.totalCorrect / quizQuestions.length) >= 0.9
-  }
+    condition: (stats: QuizStats) => stats.highestStreak >= threshold,
+    level: index + 1
+  }))
 ];
 
 // Default stats
@@ -159,7 +153,7 @@ const QuizGame = () => {
 
         // Show toast for new achievements
         newUnlockedAchievements.forEach(achievement => {
-          toast.success(`🏆 Achievement unlocked: ${achievement.name}!`);
+          toast.success(`🏆 Achievement unlocked: ${achievement.name} Lv.${achievement.level}!`);
         });
       }
 

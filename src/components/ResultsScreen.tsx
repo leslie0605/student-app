@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Brain, Award, Trophy, Star, ArrowRight } from 'lucide-react';
+import { Brain, Award, Trophy, Star, ArrowRight, Sparkles } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 
@@ -12,6 +12,7 @@ interface Achievement {
   icon: React.ReactNode;
   condition: (stats: QuizStats) => boolean;
   isNew?: boolean;
+  level?: number;
 }
 
 export interface QuizStats {
@@ -97,10 +98,15 @@ const ResultsScreen: React.FC<ResultsScreenProps> = ({
                 <div className="flex-shrink-0">
                   {achievement.icon}
                 </div>
-                <div>
+                <div className="flex-1">
                   <h4 className="font-medium text-amber-600">{achievement.name}</h4>
                   <p className="text-sm text-muted-foreground">{achievement.description}</p>
                 </div>
+                {achievement.level && (
+                  <div className="flex-shrink-0">
+                    <Badge className="bg-amber-500 hover:bg-amber-600">Level {achievement.level}</Badge>
+                  </div>
+                )}
               </div>
             ))}
           </div>
