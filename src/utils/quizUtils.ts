@@ -44,64 +44,63 @@ export interface QuizStats {
   achievements: string[];
 }
 
+// Define available quiz data modules
+interface QuizDataModule {
+  id: string;
+  title: string;
+  description: string;
+  questions: QuizQuestion[];
+  concepts: Concept[];
+}
+
+// Registry of available quiz data modules
+const quizDataRegistry: QuizDataModule[] = [
+  {
+    id: 'brain-quiz',
+    title: 'Brain Function Quiz',
+    description: 'Test your knowledge about different brain regions and their functions.',
+    questions: brainQuestions,
+    concepts: brainConcepts
+  },
+  {
+    id: 'physics-quiz',
+    title: 'Physics Concepts Quiz',
+    description: 'Learn about fundamental physics concepts and phenomena.',
+    questions: physicsQuestions,
+    concepts: physicsConcepts
+  }
+];
+
 // Get quiz title based on quiz ID
 export const getQuizTitle = (quizId: string): string => {
-  switch (quizId) {
-    case 'brain-quiz': 
-      return 'Brain Function Quiz';
-    case 'physics-quiz': 
-      return 'Physics Concepts Quiz';
-    case 'psychology-quiz': 
-      return 'Psychology Quiz';
-    case 'science-quiz': 
-      return 'Science Quiz';
-    case 'math-quiz': 
-      return 'Mathematics Quiz';
-    default: 
-      return 'Knowledge Quiz';
-  }
+  const quiz = quizDataRegistry.find(q => q.id === quizId);
+  return quiz?.title || "Knowledge Quiz";
 };
 
-// Get quiz icon based on quiz ID (React components would be passed elsewhere)
+// Get quiz description based on quiz ID
 export const getQuizDescriptions = (quizId: string): string => {
-  switch (quizId) {
-    case 'brain-quiz': 
-      return 'Test your knowledge about different brain regions and their functions.';
-    case 'physics-quiz': 
-      return 'Learn about fundamental physics concepts and phenomena.';
-    case 'psychology-quiz': 
-      return 'Learn about fundamental psychological theories and principles.';
-    case 'science-quiz': 
-      return 'Test your knowledge of basic scientific principles and discoveries.';
-    case 'math-quiz': 
-      return 'Challenge yourself with mathematical problems and concepts.';
-    default: 
-      return 'Test your knowledge in this quiz.';
-  }
+  const quiz = quizDataRegistry.find(q => q.id === quizId);
+  return quiz?.description || "Test your knowledge in this quiz.";
 };
 
 // Load quiz data dynamically based on quizId
 export const loadQuizData = (quizId: string) => {
-  switch (quizId) {
-    case 'brain-quiz':
-      return {
-        questions: brainQuestions,
-        options: brainConcepts
-      };
-    case 'physics-quiz':
-      return {
-        questions: physicsQuestions,
-        options: physicsConcepts
-      };
-    default:
-      console.error(`Quiz data for ${quizId} not found`);
-      return null;
+  const quiz = quizDataRegistry.find(q => q.id === quizId);
+  
+  if (!quiz) {
+    console.error(`Quiz data for ${quizId} not found`);
+    return null;
   }
+  
+  return {
+    questions: quiz.questions,
+    options: quiz.concepts
+  };
 };
 
 // Get available quiz IDs based on implemented data files
 export const getAvailableQuizIds = (): string[] => {
-  return ['brain-quiz', 'physics-quiz'];
+  return quizDataRegistry.map(quiz => quiz.id);
 };
 
 // Local storage key for completed quizzes

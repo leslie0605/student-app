@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import BrainDiagram from '@/components/BrainDiagram';
@@ -20,7 +19,7 @@ import {
   saveQuizStats
 } from '@/utils/quizUtils';
 import { toast } from 'sonner';
-import { Brain, ChevronLeft, Award, Trophy, Star, Badge, Sparkles, PieChart, Atom, Calculator } from 'lucide-react';
+import { Brain, ChevronLeft, Award, Trophy, Star, Badge, Sparkles, PieChart, Atom, Calculator, BookOpen } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 // Define achievements with multiple levels
@@ -56,9 +55,18 @@ const ACHIEVEMENTS = [
   }))
 ];
 
+// Map of quiz icons by quiz ID
+const quizIconMap: Record<string, React.ReactNode> = {
+  'brain-quiz': <Brain className="h-4 w-4" />,
+  'physics-quiz': <Atom className="h-4 w-4" />,
+};
+
+// Default icon for quizzes without a specific icon
+const defaultQuizIcon = <BookOpen className="h-4 w-4" />;
+
 const QuizGame = () => {
   const navigate = useNavigate();
-  const { quizId = 'brain-quiz' } = useParams<{ quizId: string }>();
+  const { quizId = '' } = useParams<{ quizId: string }>();
   
   const [quizData, setQuizData] = useState<{ questions: any[], options: any[] } | null>(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -319,14 +327,9 @@ const QuizGame = () => {
   const quizTitle = getQuizTitle(quizId);
   const quizDescription = getQuizDescriptions(quizId);
   
+  // Get quiz icon based on quiz ID
   const getQuizIcon = () => {
-    switch (quizId) {
-      case 'brain-quiz': return <Brain className="h-4 w-4" />;
-      case 'psychology-quiz': return <PieChart className="h-4 w-4" />;
-      case 'science-quiz': return <Atom className="h-4 w-4" />;
-      case 'math-quiz': return <Calculator className="h-4 w-4" />;
-      default: return <Brain className="h-4 w-4" />;
-    }
+    return quizIconMap[quizId] || defaultQuizIcon;
   };
 
   return (

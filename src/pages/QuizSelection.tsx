@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Brain, ArrowLeft, BookOpen, Atom, PieChart, Calculator } from 'lucide-react';
@@ -10,47 +11,30 @@ interface QuizData {
   title: string;
   description: string;
   icon: React.ReactNode;
-  available: boolean;
 }
+
+// Map of quiz icons by quiz ID
+const quizIconMap: Record<string, React.ReactNode> = {
+  'brain-quiz': <Brain className="h-8 w-8 text-magic-purple" />,
+  'physics-quiz': <Atom className="h-8 w-8 text-magic-blue" />,
+};
+
+// Default icon for quizzes without a specific icon
+const defaultQuizIcon = <BookOpen className="h-8 w-8 text-magic-purple" />;
 
 const QuizSelection = () => {
   const navigate = useNavigate();
   const availableQuizIds = getAvailableQuizIds();
   
-  // Define all possible quizzes
-  const allQuizzes: QuizData[] = [
-    {
-      id: 'brain-quiz',
-      title: getQuizTitle('brain-quiz'),
-      description: getQuizDescriptions('brain-quiz'),
-      icon: <Brain className="h-8 w-8 text-magic-purple" />,
-      available: availableQuizIds.includes('brain-quiz')
-    },
-    {
-      id: 'physics-quiz',
-      title: getQuizTitle('physics-quiz'),
-      description: getQuizDescriptions('physics-quiz'),
-      icon: <Atom className="h-8 w-8 text-magic-blue" />,
-      available: availableQuizIds.includes('physics-quiz')
-    },
-    {
-      id: 'psychology-quiz',
-      title: getQuizTitle('psychology-quiz'),
-      description: getQuizDescriptions('psychology-quiz'),
-      icon: <PieChart className="h-8 w-8 text-magic-pink" />,
-      available: availableQuizIds.includes('psychology-quiz')
-    },
-    {
-      id: 'math-quiz',
-      title: getQuizTitle('math-quiz'),
-      description: getQuizDescriptions('math-quiz'),
-      icon: <Calculator className="h-8 w-8 text-emerald-500" />,
-      available: availableQuizIds.includes('math-quiz')
-    }
-  ];
+  // Create quiz cards only for available quizzes
+  const availableQuizzes: QuizData[] = availableQuizIds.map(quizId => ({
+    id: quizId,
+    title: getQuizTitle(quizId),
+    description: getQuizDescriptions(quizId),
+    icon: quizIconMap[quizId] || defaultQuizIcon
+  }));
 
-  const handleQuizSelect = (quizId: string, available: boolean) => {
-    if (!available) return;
+  const handleQuizSelect = (quizId: string) => {
     navigate(`/quiz-game/${quizId}`);
   };
 
@@ -79,7 +63,7 @@ const QuizSelection = () => {
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-          {allQuizzes.map((quiz) => {
+          {availableQuizzes.map((quiz) => {
             const completed = isQuizCompleted(quiz.id);
             
             return (
@@ -87,12 +71,10 @@ const QuizSelection = () => {
                 key={quiz.id}
                 className={cn(
                   "p-6 rounded-xl border transition-all duration-300",
-                  "hover:shadow-lg hover:translate-y-[-2px]",
-                  quiz.available 
-                    ? "bg-white border-magic-purple/30 cursor-pointer" 
-                    : "bg-gray-50 border-gray-200 opacity-70 cursor-not-allowed"
+                  "bg-white border-magic-purple/30 cursor-pointer", 
+                  "hover:shadow-lg hover:translate-y-[-2px]"
                 )}
-                onClick={() => handleQuizSelect(quiz.id, quiz.available)}
+                onClick={() => handleQuizSelect(quiz.id)}
               >
                 <div className="flex items-start gap-4">
                   <div className="flex-shrink-0 w-16 h-16 rounded-full bg-magic-purple/10 flex items-center justify-center">
@@ -102,30 +84,24 @@ const QuizSelection = () => {
                   <div className="flex-1">
                     <div className="flex items-center justify-between">
                       <h3 className="text-xl font-bold mb-2">{quiz.title}</h3>
-                      {!quiz.available ? (
-                        <span className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full">
-                          Coming Soon
-                        </span>
-                      ) : completed ? (
+                      {completed && (
                         <span className="px-2 py-1 bg-green-100 text-green-600 text-xs rounded-full">
                           Completed
                         </span>
-                      ) : null}
+                      )}
                     </div>
                     <p className="text-muted-foreground">{quiz.description}</p>
                     
-                    {quiz.available && (
-                      <button 
-                        className={cn(
-                          "mt-4 px-4 py-2 rounded-lg text-sm font-medium transition-colors",
-                          completed 
-                            ? "bg-green-100 text-green-700 hover:bg-green-200" 
-                            : "bg-magic-purple/10 text-magic-purple hover:bg-magic-purple/20"
-                        )}
-                      >
-                        {completed ? "Review Quiz" : "Start Quiz"}
-                      </button>
-                    )}
+                    <button 
+                      className={cn(
+                        "mt-4 px-4 py-2 rounded-lg text-sm font-medium transition-colors",
+                        completed 
+                          ? "bg-green-100 text-green-700 hover:bg-green-200" 
+                          : "bg-magic-purple/10 text-magic-purple hover:bg-magic-purple/20"
+                      )}
+                    >
+                      {completed ? "Review Quiz" : "Start Quiz"}
+                    </button>
                   </div>
                 </div>
               </div>
