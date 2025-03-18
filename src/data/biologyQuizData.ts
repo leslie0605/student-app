@@ -8,7 +8,7 @@ export interface QuizQuestion {
   id: number;
   question: string;
   explanation: string;
-  correctRegion: string;
+  correctConcept: string;
   options: string[];
 }
 
@@ -102,7 +102,7 @@ export const quizQuestions: QuizQuestion[] = [
       "Why do plants thrive in sunlight while struggling to grow in dark environments?",
     explanation:
       "Plants use photosynthesis to convert light energy into chemical energy. Without enough light, their energy production falters, leading to stunted growth.",
-    correctRegion: "photosynthesis",
+    correctConcept: "photosynthesis",
     options: ["photosynthesis", "cell-theory", "respiration", "genetics"],
   },
   {
@@ -111,7 +111,7 @@ export const quizQuestions: QuizQuestion[] = [
       "Why do certain animal species appear perfectly adapted to their environments over generations?",
     explanation:
       "Evolution through natural selection allows species to develop traits that are advantageous in their environments, resulting in well-adapted populations over time.",
-    correctRegion: "evolution",
+    correctConcept: "evolution",
     options: ["evolution", "homeostasis", "genetics", "ecology"],
   },
   {
@@ -120,7 +120,7 @@ export const quizQuestions: QuizQuestion[] = [
       "How can two siblings share many similarities yet exhibit distinct differences?",
     explanation:
       "Genetics explains that siblings inherit a mix of genes from their parents, which leads to both shared traits and individual differences.",
-    correctRegion: "genetics",
+    correctConcept: "genetics",
     options: ["genetics", "cell-theory", "protein-synthesis", "biodiversity"],
   },
   {
@@ -129,7 +129,7 @@ export const quizQuestions: QuizQuestion[] = [
       "Why is it that every living organism, from the simplest bacterium to complex animals, is built from similar structural units?",
     explanation:
       "Cell Theory reveals that all life forms are composed of cells—the basic building blocks that unify the diversity of life.",
-    correctRegion: "cell-theory",
+    correctConcept: "cell-theory",
     options: ["cell-theory", "dna", "metabolism", "ecology"],
   },
   {
@@ -138,7 +138,7 @@ export const quizQuestions: QuizQuestion[] = [
       "Why do you start sweating on a hot day, and how does your body avoid overheating?",
     explanation:
       "Homeostasis is the body's mechanism to maintain a stable internal temperature. Sweating cools the body, preventing overheating during high temperatures.",
-    correctRegion: "homeostasis",
+    correctConcept: "homeostasis",
     options: ["homeostasis", "metabolism", "respiration", "protein-synthesis"],
   },
   {
@@ -147,7 +147,7 @@ export const quizQuestions: QuizQuestion[] = [
       "How does your body determine traits like eye color or height during development?",
     explanation:
       "DNA carries genetic instructions that act as a blueprint for developing physical traits, ensuring that characteristics are passed down through generations.",
-    correctRegion: "dna",
+    correctConcept: "dna",
     options: ["dna", "genetics", "evolution", "ecology"],
   },
   {
@@ -156,7 +156,7 @@ export const quizQuestions: QuizQuestion[] = [
       "Why can eating protein-rich foods help repair muscles and tissues?",
     explanation:
       "Protein synthesis is essential for repairing and building tissues, as cells use amino acids from proteins to create new, functional proteins for growth and repair.",
-    correctRegion: "protein-synthesis",
+    correctConcept: "protein-synthesis",
     options: [
       "protein-synthesis",
       "photosynthesis",
@@ -170,7 +170,7 @@ export const quizQuestions: QuizQuestion[] = [
       "Why do some people seem to burn energy faster than others even while at rest?",
     explanation:
       "Metabolism encompasses all the chemical reactions that produce energy in the body. Variations in metabolic rate can be due to genetic factors, lifestyle, and other influences.",
-    correctRegion: "metabolism",
+    correctConcept: "metabolism",
     options: ["metabolism", "ecology", "homeostasis", "evolution"],
   },
   {
@@ -179,7 +179,7 @@ export const quizQuestions: QuizQuestion[] = [
       "Why does breathing become more labored during intense physical activities?",
     explanation:
       "Respiration increases during exertion to supply more oxygen to the muscles, leading to heavier breathing as the body works to meet higher energy demands.",
-    correctRegion: "respiration",
+    correctConcept: "respiration",
     options: [
       "respiration",
       "protein-synthesis",
@@ -193,7 +193,7 @@ export const quizQuestions: QuizQuestion[] = [
       "How do interactions among plants, animals, and their surroundings contribute to a balanced environment?",
     explanation:
       "Ecology studies how living organisms interact with each other and their environment, creating complex networks that support healthy, resilient ecosystems.",
-    correctRegion: "ecology",
+    correctConcept: "ecology",
     options: ["ecology", "biodiversity", "evolution", "cell-theory"],
   },
 ];

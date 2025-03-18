@@ -8,7 +8,7 @@ export interface QuizQuestion {
   id: number;
   question: string;
   explanation: string;
-  correctRegion: string;
+  correctConcept: string;
   options: string[];
 }
 
@@ -16,7 +16,7 @@ export const quizMetadata = {
   id: "physics-quiz",
   title: "Physics Concepts Quiz",
   description: "Learn about fundamental physics concepts and phenomena.",
-  icon: "atom"
+  icon: "atom",
 };
 
 export const concepts: Concept[] = [
@@ -73,20 +73,18 @@ export const concepts: Concept[] = [
 export const quizQuestions: QuizQuestion[] = [
   {
     id: 1,
-    question:
-      "Why does a ball thrown upward eventually come back down?",
+    question: "Why does a ball thrown upward eventually come back down?",
     explanation:
       "According to mechanics, gravity exerts a constant force on the ball, causing an acceleration towards Earth that eventually reverses its upward motion.",
-    correctRegion: "mechanics",
+    correctConcept: "mechanics",
     options: ["mechanics", "thermodynamics", "optics", "quantum-mechanics"],
   },
   {
     id: 2,
-    question:
-      "Why do magnets stick to a refrigerator door?",
+    question: "Why do magnets stick to a refrigerator door?",
     explanation:
       "This is explained by electromagnetism. Magnetic fields interact with the ferromagnetic materials in the door, causing the magnet to adhere.",
-    correctRegion: "electromagnetism",
+    correctConcept: "electromagnetism",
     options: ["electromagnetism", "mechanics", "acoustics", "fluid-dynamics"],
   },
   {
@@ -95,7 +93,7 @@ export const quizQuestions: QuizQuestion[] = [
       "Why does a metal spoon heat up when placed in a hot cup of soup?",
     explanation:
       "Thermodynamics explains that heat is transferred from the hot soup to the cooler spoon through conduction, raising the spoon's temperature.",
-    correctRegion: "thermodynamics",
+    correctConcept: "thermodynamics",
     options: ["thermodynamics", "quantum-mechanics", "mechanics", "acoustics"],
   },
   {
@@ -104,7 +102,7 @@ export const quizQuestions: QuizQuestion[] = [
       "How can particles be in multiple states or locations at the same time?",
     explanation:
       "Quantum mechanics reveals that particles can exist in a superposition of states until they are observed, which is a hallmark of quantum behavior.",
-    correctRegion: "quantum-mechanics",
+    correctConcept: "quantum-mechanics",
     options: ["quantum-mechanics", "relativity", "optics", "mechanics"],
   },
   {
@@ -113,34 +111,41 @@ export const quizQuestions: QuizQuestion[] = [
       "Why does time seem to slow down when you're moving at very high speeds?",
     explanation:
       "Relativity predicts time dilation: as an object approaches the speed of light, time passes slower for it compared to a stationary observer.",
-    correctRegion: "relativity",
+    correctConcept: "relativity",
     options: ["relativity", "mechanics", "thermodynamics", "quantum-mechanics"],
   },
   {
     id: 6,
-    question:
-      "Why does a prism split white light into a rainbow of colors?",
+    question: "Why does a prism split white light into a rainbow of colors?",
     explanation:
       "Optics explains that different wavelengths of light are refracted by different amounts when passing through a prism, separating the light into its constituent colors.",
-    correctRegion: "optics",
-    options: ["optics", "electromagnetism", "quantum-mechanics", "fluid-dynamics"],
+    correctConcept: "optics",
+    options: [
+      "optics",
+      "electromagnetism",
+      "quantum-mechanics",
+      "fluid-dynamics",
+    ],
   },
   {
     id: 7,
-    question:
-      "Why do we hear echoes in a canyon?",
+    question: "Why do we hear echoes in a canyon?",
     explanation:
       "Acoustics tells us that sound waves reflect off the canyon walls, creating echoes that are heard after the original sound is produced.",
-    correctRegion: "acoustics",
+    correctConcept: "acoustics",
     options: ["acoustics", "mechanics", "thermodynamics", "optics"],
   },
   {
     id: 8,
-    question:
-      "How do airplanes generate lift to overcome gravity?",
+    question: "How do airplanes generate lift to overcome gravity?",
     explanation:
       "Fluid dynamics explains that the shape of an airplane's wings causes air to flow faster over the top than the bottom, creating a pressure difference that produces lift.",
-    correctRegion: "fluid-dynamics",
-    options: ["fluid-dynamics", "mechanics", "electromagnetism", "thermodynamics"],
+    correctConcept: "fluid-dynamics",
+    options: [
+      "fluid-dynamics",
+      "mechanics",
+      "electromagnetism",
+      "thermodynamics",
+    ],
   },
 ];

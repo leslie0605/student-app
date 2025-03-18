@@ -1,13 +1,12 @@
-
-import React from 'react';
-import { cn } from '@/lib/utils';
-import { Concept } from '@/utils/quizUtils';
-import { CheckCircle, XCircle } from 'lucide-react';
+import React from "react";
+import { cn } from "@/lib/utils";
+import { Concept } from "@/utils/quizUtils";
+import { CheckCircle, XCircle } from "lucide-react";
 
 interface QuizFeedbackProps {
   isCorrect: boolean;
   selectedRegion: Concept | null;
-  correctRegion: Concept;
+  correctConcept: Concept;
   explanation: string;
   onNext: () => void;
 }
@@ -15,9 +14,9 @@ interface QuizFeedbackProps {
 const QuizFeedback: React.FC<QuizFeedbackProps> = ({
   isCorrect,
   selectedRegion,
-  correctRegion,
+  correctConcept,
   explanation,
-  onNext
+  onNext,
 }) => {
   return (
     <div className="w-full max-w-lg mx-auto p-6 rounded-xl glass-effect border border-magic-blue/20 shadow-lg animate-fade-up">
@@ -39,17 +38,29 @@ const QuizFeedback: React.FC<QuizFeedbackProps> = ({
 
       {!isCorrect && selectedRegion && (
         <p className="mb-3 text-muted-foreground">
-          You selected <span className="font-medium text-foreground">{selectedRegion.name}</span>, but the correct answer is <span className="font-medium text-green-500">{correctRegion.name}</span>.
+          You selected{" "}
+          <span className="font-medium text-foreground">
+            {selectedRegion.name}
+          </span>
+          , but the correct answer is{" "}
+          <span className="font-medium text-green-500">
+            {correctConcept.name}
+          </span>
+          .
         </p>
       )}
 
       <div className="mb-4">
-        <h4 className="font-bold mb-2 text-magic-purple">{correctRegion.name}: What You Need to Know</h4>
-        <p className="text-muted-foreground">{correctRegion.description}</p>
+        <h4 className="font-bold mb-2 text-magic-purple">
+          {correctConcept.name}: What You Need to Know
+        </h4>
+        <p className="text-muted-foreground">{correctConcept.description}</p>
       </div>
 
       <div className="mb-6">
-        <h4 className="font-bold mb-2 text-magic-blue">The Brain Science Explained:</h4>
+        <h4 className="font-bold mb-2 text-magic-blue">
+          The Brain Science Explained:
+        </h4>
         <p className="text-muted-foreground">{explanation}</p>
       </div>
 
