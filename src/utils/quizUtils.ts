@@ -82,8 +82,8 @@ export const initializeQuizzes = async (): Promise<void> => {
     // Dynamically import and register each quiz file
     for (const fileName of quizFiles) {
       try {
-        // Use dynamic import to load the quiz file
-        const module = await import(`@/data/${fileName}`);
+        // Use dynamic import to load the quiz file - fix path to use relative path instead of alias
+        const module = await import(`../data/${fileName}`);
         
         if (module.quizMetadata && module.concepts && module.quizQuestions) {
           const quizModule: QuizDataModule = {
