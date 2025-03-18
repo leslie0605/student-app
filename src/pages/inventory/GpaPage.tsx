@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import MainNavbar from '@/components/MainNavbar';
@@ -6,7 +5,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { ChevronLeft, Calculator, GraduationCap, FileText } from 'lucide-react';
 import GPACheck from '@/components/inventory/gpa/GPACheck';
-import MentorChatButton from '@/components/mentor/MentorChatButton';
 
 const GpaPage = () => {
   const navigate = useNavigate();
@@ -102,7 +100,6 @@ const GpaPage = () => {
           </div>
         </div>
       </div>
-      <MentorChatButton />
     </div>
   );
 };

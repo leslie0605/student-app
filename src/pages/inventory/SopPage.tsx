@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
@@ -8,7 +7,6 @@ import { Card, CardContent } from '@/components/ui/card';
 import { ChevronLeft, Upload, FileText, FileCheck } from 'lucide-react';
 import { fetchSoPVersions } from '@/services/inventoryService';
 import { SoPVersion } from '@/types/inventory';
-import MentorChatButton from '@/components/mentor/MentorChatButton';
 
 const SopPage = () => {
   const navigate = useNavigate();
@@ -151,7 +149,6 @@ const SopPage = () => {
           </div>
         </div>
       </div>
-      <MentorChatButton />
     </div>
   );
 };
