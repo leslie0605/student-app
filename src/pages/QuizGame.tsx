@@ -20,7 +20,7 @@ import {
   saveQuizStats
 } from '@/utils/quizUtils';
 import { toast } from 'sonner';
-import { Brain, ChevronLeft, Award, Trophy, Star, Badge, Sparkles } from 'lucide-react';
+import { Brain, ChevronLeft, Award, Trophy, Star, Badge, Sparkles, PieChart, Atom, Calculator } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 // Define achievements with multiple levels
