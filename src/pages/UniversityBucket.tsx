@@ -11,6 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/components/ui/use-toast';
 import { addApplicationTask } from '@/services/journeyService';
 import { ApplicationTask } from '@/types/journey';
+import { TooltipProvider } from '@/components/ui/tooltip';
 
 const UniversityBucket = () => {
   const { toast } = useToast();
@@ -140,40 +141,42 @@ const UniversityBucket = () => {
           </p>
         </div>
         
-        <Tabs defaultValue="explore" className="w-full">
-          <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 mb-8">
-            <TabsTrigger value="explore">Explore</TabsTrigger>
-            <TabsTrigger value="saved">My Bucket</TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="explore">
-            <UniversityFilter
-              fields={fields}
-              locations={locations}
-              selectedField={selectedField}
-              selectedLocation={selectedLocation}
-              programType={programType}
-              onFieldChange={setSelectedField}
-              onLocationChange={setSelectedLocation}
-              onProgramTypeChange={setProgramType}
-              isLoading={isFieldsLoading || isLocationsLoading}
-            />
+        <TooltipProvider>
+          <Tabs defaultValue="explore" className="w-full">
+            <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 mb-8">
+              <TabsTrigger value="explore">Explore</TabsTrigger>
+              <TabsTrigger value="saved">My Bucket</TabsTrigger>
+            </TabsList>
             
-            <UniversityGrid
-              universities={filteredUniversities}
-              onToggleSaved={handleToggleSaved}
-              isLoading={isUnisLoading}
-            />
-          </TabsContent>
-          
-          <TabsContent value="saved">
-            <SavedUniversities
-              universities={savedUniversities}
-              onToggleSaved={handleToggleSaved}
-              isLoading={isUnisLoading}
-            />
-          </TabsContent>
-        </Tabs>
+            <TabsContent value="explore">
+              <UniversityFilter
+                fields={fields}
+                locations={locations}
+                selectedField={selectedField}
+                selectedLocation={selectedLocation}
+                programType={programType}
+                onFieldChange={setSelectedField}
+                onLocationChange={setSelectedLocation}
+                onProgramTypeChange={setProgramType}
+                isLoading={isFieldsLoading || isLocationsLoading}
+              />
+              
+              <UniversityGrid
+                universities={filteredUniversities}
+                onToggleSaved={handleToggleSaved}
+                isLoading={isUnisLoading}
+              />
+            </TabsContent>
+            
+            <TabsContent value="saved">
+              <SavedUniversities
+                universities={savedUniversities}
+                onToggleSaved={handleToggleSaved}
+                isLoading={isUnisLoading}
+              />
+            </TabsContent>
+          </Tabs>
+        </TooltipProvider>
       </div>
     </div>
   );
