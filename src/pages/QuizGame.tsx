@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import QuizDiagram from "@/components/QuizDiagram";
 import ProgressBar from "@/components/ProgressBar";
 import QuizFeedback from "@/components/QuizFeedback";
 import GameStats from "@/components/GameStats";
@@ -363,6 +362,20 @@ const QuizGame = () => {
     return quizIconMap[quizId] || defaultQuizIcon;
   };
 
+  // Get quiz image based on quiz ID
+  const getQuizImage = () => {
+    const quizImages: Record<string, string> = {
+      "brain-quiz": "/lovable-uploads/22d2e7af-4b10-4247-b980-a365152c6ff1.png",
+      "physics-quiz": "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?auto=format&fit=crop&w=800&q=80",
+      "music-quiz": "https://images.unsplash.com/photo-1507838153414-b4b713384a76?auto=format&fit=crop&w=800&q=80",
+      "math-quiz": "https://images.unsplash.com/photo-1509228468518-180dd4864904?auto=format&fit=crop&w=800&q=80",
+      "biology-quiz": "https://images.unsplash.com/photo-1581093588401-fbb62a02f120?auto=format&fit=crop&w=800&q=80",
+    };
+
+    const defaultImage = "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?auto=format&fit=crop&w=800&q=80";
+    return quizImages[quizId] || defaultImage;
+  };
+
   return (
     <div className="min-h-screen pt-24 pb-12 px-4 bg-gradient-to-b from-magic-light to-white">
       <div className="container mx-auto max-w-4xl">
@@ -450,19 +463,34 @@ const QuizGame = () => {
                     Question {currentQuestionIndex + 1}:
                   </h2>
                   <p className="text-lg mb-4">{currentQuestion.question}</p>
-                  <p className="text-sm text-muted-foreground">
-                    Select the correct answer:
-                  </p>
+                  <img
+                    src={getQuizImage()}
+                    alt="Quiz Illustration"
+                    className="w-full max-w-3xl mx-auto rounded-lg mb-6 object-cover aspect-video"
+                  />
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+                    {displayOptions.map((option) => (
+                      <button
+                        key={option.id}
+                        onClick={() => !selectedOption && !showFeedback && handleOptionClick(option.id)}
+                        disabled={!!selectedOption || showFeedback}
+                        className={cn(
+                          "text-xs sm:text-sm p-2 h-auto transition-all duration-300",
+                          "rounded-lg focus:outline-none focus:ring-2 focus:ring-magic-purple focus:ring-offset-2",
+                          option.id === selectedOption
+                            ? "bg-magic-pink text-white shadow-lg"
+                            : option.id === correctOptionId && selectedOption
+                            ? "bg-green-500 text-white border-green-600"
+                            : "bg-white/50 hover:bg-magic-purple/10"
+                        )}
+                        aria-label={option.name}
+                        title={option.name}
+                      >
+                        {option.name}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-
-                <QuizDiagram
-                  regions={displayOptions}
-                  selectedRegion={selectedOption}
-                  correctConcept={showFeedback ? correctOptionId : null}
-                  onRegionClick={handleOptionClick}
-                  disabled={!!selectedOption || showFeedback}
-                  quizId={quizId}
-                />
               </div>
             ) : (
               <QuizFeedback
