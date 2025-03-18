@@ -468,7 +468,7 @@ const QuizGame = () => {
                     {displayOptions.map((option: any) => (
                       <button
                         key={option.id}
-                        onClick={() => !disabled && handleOptionClick(option.id)}
+                        onClick={() => !(!!selectedOption || showFeedback) && handleOptionClick(option.id)}
                         disabled={!!selectedOption || showFeedback}
                         className={cn(
                           "text-xs sm:text-sm p-2 h-auto transition-all duration-300",
