@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { ChevronLeft, Languages, Check, HelpCircle } from 'lucide-react';
 import LanguageTestCheck from '@/components/inventory/language/LanguageTestCheck';
+import MentorChatButton from '@/components/mentor/MentorChatButton';
 
 const LanguagePage = () => {
   const navigate = useNavigate();
@@ -100,6 +101,7 @@ const LanguagePage = () => {
           </div>
         </div>
       </div>
+      <MentorChatButton />
     </div>
   );
 };
