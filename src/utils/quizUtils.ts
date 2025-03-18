@@ -1,7 +1,4 @@
 
-import { concepts as brainConcepts, quizQuestions as brainQuestions, quizMetadata as brainMetadata } from '@/data/brainQuizData';
-import { concepts as physicsConcepts, quizQuestions as physicsQuestions, quizMetadata as physicsMetadata } from '@/data/physicsQuizData';
-import { concepts as mathConcepts, quizQuestions as mathQuestions, quizMetadata as mathMetadata } from '@/data/mathQuizData';
 import { toast } from 'sonner';
 
 // Types for quiz data
@@ -18,6 +15,14 @@ export interface QuizQuestion {
   correctRegion?: string;
   correctConcept?: string;
   options: string[];
+}
+
+// Quiz metadata interface
+export interface QuizMetadata {
+  id: string;
+  title: string;
+  description: string;
+  icon?: string;
 }
 
 // User answer tracking
@@ -47,7 +52,7 @@ export interface QuizStats {
 }
 
 // Define available quiz data modules
-interface QuizDataModule {
+export interface QuizDataModule {
   id: string;
   title: string;
   description: string;
@@ -56,32 +61,61 @@ interface QuizDataModule {
   icon?: string;
 }
 
-// Dynamic registry of all available quiz data modules
-// This will automatically include any quiz data files imported at the top
-const quizDataRegistry: QuizDataModule[] = [
-  {
-    ...brainMetadata,
-    questions: brainQuestions,
-    concepts: brainConcepts
-  },
-  {
-    ...physicsMetadata,
-    questions: physicsQuestions,
-    concepts: physicsConcepts
-  },
-  {
-    ...mathMetadata,
-    questions: mathQuestions,
-    concepts: mathConcepts
-  }
+// Quiz registry to store all registered quiz modules
+const quizDataRegistry: QuizDataModule[] = [];
+
+// List of quiz files to import
+// The only place you need to modify when adding a new quiz file
+const quizFiles = [
+  'brainQuizData',
+  'physicsQuizData',
+  'mathQuizData',
+  'biologyQuizData'
 ];
+
+// Function to initialize and load all quizzes
+export const initializeQuizzes = async (): Promise<void> => {
+  try {
+    // Clear the registry first
+    quizDataRegistry.length = 0;
+    
+    // Dynamically import and register each quiz file
+    for (const fileName of quizFiles) {
+      try {
+        // Use dynamic import to load the quiz file
+        const module = await import(`@/data/${fileName}`);
+        
+        if (module.quizMetadata && module.concepts && module.quizQuestions) {
+          const quizModule: QuizDataModule = {
+            ...module.quizMetadata,
+            questions: module.quizQuestions,
+            concepts: module.concepts
+          };
+          
+          // Register the quiz
+          registerQuizModule(quizModule);
+        } else {
+          console.warn(`Quiz file ${fileName} has invalid format`);
+        }
+      } catch (error) {
+        console.error(`Failed to load quiz file: ${fileName}`, error);
+      }
+    }
+    
+    console.log(`Successfully loaded ${quizDataRegistry.length} quizzes`);
+  } catch (error) {
+    console.error('Failed to initialize quizzes:', error);
+  }
+};
 
 // Function to dynamically register a new quiz module
 export const registerQuizModule = (module: QuizDataModule) => {
   // Check if a module with this ID already exists
   if (!quizDataRegistry.some(quiz => quiz.id === module.id)) {
     quizDataRegistry.push(module);
-    console.log(`New quiz module registered: ${module.id}`);
+    console.log(`Quiz module registered: ${module.id}`);
+  } else {
+    console.log(`Quiz module ${module.id} already registered`);
   }
 };
 
@@ -124,7 +158,7 @@ export const loadQuizData = (quizId: string) => {
   };
 };
 
-// Get available quiz IDs based on implemented data files
+// Get available quiz IDs based on registered modules
 export const getAvailableQuizIds = (): string[] => {
   return quizDataRegistry.map(quiz => quiz.id);
 };
