@@ -69,6 +69,7 @@ const quizFiles = [
   "physicsQuizData",
   "mathQuizData",
   "biologyQuizData",
+  "musicQuizData",
 ];
 
 // Function to initialize and load all quizzes
