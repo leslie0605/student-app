@@ -1,33 +1,48 @@
+
 import React from "react";
 import { cn } from "@/lib/utils";
 import { Concept } from "@/utils/quizUtils";
 import { Button } from "@/components/ui/button";
 
-interface BrainDiagramProps {
+interface QuizDiagramProps {
   regions: Concept[];
   selectedRegion: string | null;
   correctConcept: string | null;
   onRegionClick: (regionId: string) => void;
   disabled: boolean;
+  quizId: string;
 }
 
-const BrainDiagram: React.FC<BrainDiagramProps> = ({
+const QuizDiagram: React.FC<QuizDiagramProps> = ({
   regions,
   selectedRegion,
   correctConcept,
   onRegionClick,
   disabled,
+  quizId,
 }) => {
+  // Map quiz IDs to their corresponding diagram images
+  const quizImages: Record<string, string> = {
+    "brain-quiz": "/lovable-uploads/22d2e7af-4b10-4247-b980-a365152c6ff1.png",
+    "physics-quiz": "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?auto=format&fit=crop&w=800&q=80",
+    "music-quiz": "https://images.unsplash.com/photo-1507838153414-b4b713384a76?auto=format&fit=crop&w=800&q=80",
+    "math-quiz": "https://images.unsplash.com/photo-1509228468518-180dd4864904?auto=format&fit=crop&w=800&q=80",
+    "biology-quiz": "https://images.unsplash.com/photo-1581093588401-fbb62a02f120?auto=format&fit=crop&w=800&q=80",
+  };
+
+  const defaultImage = "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?auto=format&fit=crop&w=800&q=80";
+  const imageUrl = quizImages[quizId] || defaultImage;
+
   return (
     <div className="relative w-full max-w-3xl mx-auto aspect-auto shadow-lg animate-fade-in">
-      {/* Brain diagram image */}
+      {/* Quiz diagram image */}
       <img
-        src="/lovable-uploads/22d2e7af-4b10-4247-b980-a365152c6ff1.png"
-        alt="Brain Diagram"
-        className="w-full h-auto rounded-lg"
+        src={imageUrl}
+        alt="Quiz Diagram"
+        className="w-full h-auto rounded-lg mb-4 object-cover aspect-video"
       />
 
-      {/* Display brain region options as rectangular buttons */}
+      {/* Display options as rectangular buttons */}
       <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
         {regions.map((region) => (
           <Button
@@ -61,4 +76,4 @@ const BrainDiagram: React.FC<BrainDiagramProps> = ({
   );
 };
 
-export default BrainDiagram;
+export default QuizDiagram;

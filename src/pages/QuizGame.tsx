@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import BrainDiagram from "@/components/BrainDiagram";
+import QuizDiagram from "@/components/QuizDiagram";
 import ProgressBar from "@/components/ProgressBar";
 import QuizFeedback from "@/components/QuizFeedback";
 import GameStats from "@/components/GameStats";
@@ -455,38 +455,14 @@ const QuizGame = () => {
                   </p>
                 </div>
 
-                {quizId === "brain-quiz" ? (
-                  <BrainDiagram
-                    regions={displayOptions}
-                    selectedRegion={selectedOption}
-                    correctConcept={showFeedback ? correctOptionId : null}
-                    onRegionClick={handleOptionClick}
-                    disabled={!!selectedOption || showFeedback}
-                  />
-                ) : (
-                  <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
-                    {displayOptions.map((option: any) => (
-                      <button
-                        key={option.id}
-                        onClick={() => !(!!selectedOption || showFeedback) && handleOptionClick(option.id)}
-                        disabled={!!selectedOption || showFeedback}
-                        className={cn(
-                          "text-xs sm:text-sm p-2 h-auto transition-all duration-300",
-                          "focus:outline-none focus:ring-2 focus:ring-magic-purple focus:ring-offset-2",
-                          option.id === selectedOption
-                            ? "bg-magic-pink text-white shadow-lg"
-                            : option.id === correctOptionId && selectedOption
-                            ? "bg-green-500 text-white border-green-600"
-                            : "bg-magic-purple/10 hover:bg-magic-purple/20 text-magic-dark"
-                        )}
-                        aria-label={option.name}
-                        title={option.name}
-                      >
-                        {option.name}
-                      </button>
-                    ))}
-                  </div>
-                )}
+                <QuizDiagram
+                  regions={displayOptions}
+                  selectedRegion={selectedOption}
+                  correctConcept={showFeedback ? correctOptionId : null}
+                  onRegionClick={handleOptionClick}
+                  disabled={!!selectedOption || showFeedback}
+                  quizId={quizId}
+                />
               </div>
             ) : (
               <QuizFeedback
