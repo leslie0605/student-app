@@ -8,6 +8,7 @@ import { ChevronLeft } from "lucide-react";
 import { fetchCVVersions } from "@/services/inventoryService";
 import { CVVersion } from "@/types/inventory";
 import CVDashboard from "@/components/inventory/cv/CVDashboard";
+import MentorChatButton from "@/components/mentor/MentorChatButton";
 
 const CvPage = () => {
   const navigate = useNavigate();
@@ -83,6 +84,7 @@ const CvPage = () => {
           </div>
         </div>
       </div>
+      <MentorChatButton />
     </div>
   );
 };

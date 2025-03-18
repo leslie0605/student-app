@@ -1,40 +1,41 @@
-import React, { useState, useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { useNavigate } from 'react-router-dom';
-import MainNavbar from '@/components/MainNavbar';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { ChevronLeft, Upload, FileText, FileCheck } from 'lucide-react';
-import { fetchSoPVersions } from '@/services/inventoryService';
-import { SoPVersion } from '@/types/inventory';
+import React, { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
+import MainNavbar from "@/components/MainNavbar";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { ChevronLeft, Upload, FileText, FileCheck } from "lucide-react";
+import { fetchSoPVersions } from "@/services/inventoryService";
+import { SoPVersion } from "@/types/inventory";
+import MentorChatButton from "@/components/mentor/MentorChatButton";
 
 const SopPage = () => {
   const navigate = useNavigate();
   const [sopVersions, setSopVersions] = useState<SoPVersion[]>([]);
-  
+
   // Fetch SoP versions
   const { isLoading: isLoadingSoP, data: sopData } = useQuery({
-    queryKey: ['sop-versions'],
-    queryFn: fetchSoPVersions
+    queryKey: ["sop-versions"],
+    queryFn: fetchSoPVersions,
   });
-  
+
   // Update state when data is fetched
   useEffect(() => {
     if (sopData) {
       setSopVersions(sopData);
     }
   }, [sopData]);
-  
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-magic-light to-white">
       <MainNavbar />
-      
+
       <div className="container mx-auto px-4 pt-24 pb-16">
         <div className="flex items-center mb-8">
-          <Button 
-            variant="ghost" 
-            className="mr-2 p-2" 
-            onClick={() => navigate('/magical-inventory')}
+          <Button
+            variant="ghost"
+            className="mr-2 p-2"
+            onClick={() => navigate("/magical-inventory")}
           >
             <ChevronLeft className="h-5 w-5" />
           </Button>
@@ -42,7 +43,7 @@ const SopPage = () => {
             Statement of Purpose
           </h1>
         </div>
-        
+
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           <div className="lg:col-span-9">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
@@ -55,7 +56,7 @@ const SopPage = () => {
                   </p>
                 </CardContent>
               </Card>
-              
+
               <Card className="border border-magic-blue/10 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
                 <CardContent className="p-6 flex flex-col items-center justify-center min-h-[200px]">
                   <FileCheck className="h-12 w-12 text-primary mb-4" />
@@ -66,22 +67,30 @@ const SopPage = () => {
                 </CardContent>
               </Card>
             </div>
-            
+
             <Card className="border border-magic-blue/10 shadow-sm mb-8">
               <CardContent className="p-6">
-                <h3 className="text-xl font-semibold mb-6">Your SoP Versions</h3>
+                <h3 className="text-xl font-semibold mb-6">
+                  Your SoP Versions
+                </h3>
                 {isLoadingSoP ? (
                   <div className="space-y-4">
-                    {[1, 2].map(i => (
-                      <div key={i} className="h-24 bg-muted/40 animate-pulse rounded-md" />
+                    {[1, 2].map((i) => (
+                      <div
+                        key={i}
+                        className="h-24 bg-muted/40 animate-pulse rounded-md"
+                      />
                     ))}
                   </div>
                 ) : sopVersions.length === 0 ? (
                   <div className="text-center py-12">
                     <FileText className="h-12 w-12 mx-auto text-muted-foreground opacity-20 mb-4" />
-                    <h4 className="text-lg font-medium mb-2">No SoP versions yet</h4>
+                    <h4 className="text-lg font-medium mb-2">
+                      No SoP versions yet
+                    </h4>
                     <p className="text-sm text-muted-foreground mb-6 max-w-md mx-auto">
-                      Upload your first Statement of Purpose to get started with formatting and evaluation.
+                      Upload your first Statement of Purpose to get started with
+                      formatting and evaluation.
                     </p>
                     <Button>Upload Your First SoP</Button>
                   </div>
@@ -93,7 +102,8 @@ const SopPage = () => {
                           <div>
                             <h4 className="font-medium">{version.name}</h4>
                             <p className="text-xs text-muted-foreground">
-                              Target: {version.targetUniversity} - {version.targetProgram}
+                              Target: {version.targetUniversity} -{" "}
+                              {version.targetProgram}
                             </p>
                           </div>
                           {version.score && (
@@ -102,14 +112,16 @@ const SopPage = () => {
                             </div>
                           )}
                         </div>
-                        
+
                         <div className="text-xs text-muted-foreground mb-3">
                           Last modified: {version.dateModified}
                         </div>
-                        
+
                         {version.feedback && (
                           <div className="mb-3">
-                            <p className="text-xs font-medium mb-1">Feedback:</p>
+                            <p className="text-xs font-medium mb-1">
+                              Feedback:
+                            </p>
                             <ul className="text-xs space-y-1 list-disc pl-4">
                               {version.feedback.map((item, i) => (
                                 <li key={i}>{item}</li>
@@ -117,10 +129,14 @@ const SopPage = () => {
                             </ul>
                           </div>
                         )}
-                        
+
                         <div className="flex space-x-2 mt-2">
-                          <Button size="sm" variant="outline">Download</Button>
-                          <Button size="sm" variant="outline">Edit</Button>
+                          <Button size="sm" variant="outline">
+                            Download
+                          </Button>
+                          <Button size="sm" variant="outline">
+                            Edit
+                          </Button>
                           <Button size="sm">View Report</Button>
                         </div>
                       </div>
@@ -130,7 +146,7 @@ const SopPage = () => {
               </CardContent>
             </Card>
           </div>
-          
+
           <div className="lg:col-span-3">
             <div className="space-y-6 sticky top-24">
               <Card className="border border-magic-blue/10 shadow-sm">
@@ -141,7 +157,9 @@ const SopPage = () => {
                     <li>Mention relevant faculty members by name</li>
                     <li>Connect past experiences to future plans</li>
                     <li>Explain why this specific program is a good fit</li>
-                    <li>Keep within the program's page limits (usually 1-2 pages)</li>
+                    <li>
+                      Keep within the program's page limits (usually 1-2 pages)
+                    </li>
                   </ul>
                 </CardContent>
               </Card>
@@ -149,6 +167,7 @@ const SopPage = () => {
           </div>
         </div>
       </div>
+      <MentorChatButton />
     </div>
   );
 };

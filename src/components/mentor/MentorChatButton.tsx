@@ -1,12 +1,9 @@
-
 import React, { useEffect, useRef } from "react";
-import { Button } from "@/components/ui/button";
 
 const MentorChatButton = () => {
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Only add the script if it doesn't already exist
     if (!document.getElementById("voiceflow-script")) {
       const script = document.createElement("script");
       script.type = "text/javascript";
@@ -22,39 +19,42 @@ const MentorChatButton = () => {
                 voice: {
                   url: "https://runtime-api.voiceflow.com"
                 }
+              }).then(() => {
+                window.voiceflow.chat.show(); 
               });
             }
-            v.src = "https://cdn.voiceflow.com/widget-next/bundle.mjs"; v.type = "text/javascript"; s.parentNode.insertBefore(v, s);
+            v.src = "https://cdn.voiceflow.com/widget-next/bundle.mjs"; 
+            v.type = "text/javascript"; 
+            s.parentNode.insertBefore(v, s);
         })(document, 'script');
       `;
 
-      // Add the script to the document
       document.head.appendChild(script);
+    } else {
+      if (window.voiceflow && window.voiceflow.chat) {
+        window.voiceflow.chat.show();
+      }
     }
 
-    // Clean up function to remove script when component unmounts
     return () => {
-      const existingScript = document.getElementById("voiceflow-script");
-      if (existingScript && existingScript.parentNode) {
-        existingScript.parentNode.removeChild(existingScript);
+      // hide chat button when component unmounts
+      if (window.voiceflow && window.voiceflow.chat) {
+        window.voiceflow.chat.hide();
       }
     };
   }, []);
 
-  return (
-    <div ref={chatContainerRef} id="chat-container">
-      {/* Voiceflow will automatically inject its chat UI here */}
-    </div>
-  );
+  return <div ref={chatContainerRef} id="chat-container"></div>;
 };
 
-// Add type declaration for window object to include Voiceflow chat
 declare global {
   interface Window {
     voiceflow?: {
       chat: {
-        load: (config: any) => void;
+        load: (config: any) => Promise<void>;
         open: () => void;
+        hide: () => void;
+        show: () => void;
       };
     };
   }

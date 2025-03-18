@@ -1,4 +1,3 @@
-
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Index from "./pages/Index";
@@ -14,7 +13,6 @@ import LanguagePage from "./pages/inventory/LanguagePage";
 import Journey from "./pages/Journey";
 import UniversityBucket from "./pages/UniversityBucket";
 import { Toaster } from "./components/ui/toaster";
-import MentorChatButton from "./components/mentor/MentorChatButton";
 
 import "./App.css";
 
@@ -39,7 +37,6 @@ function App() {
           <Route path="/uni-bucket" element={<UniversityBucket />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
-        <MentorChatButton />
         <Toaster />
       </Router>
     </QueryClientProvider>
