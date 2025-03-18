@@ -1,8 +1,10 @@
+
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import QuizGame from "./pages/QuizGame";
+import QuizSelection from "./pages/QuizSelection";
 import MagicalInventory from "./pages/MagicalInventory";
 import CvPage from "./pages/inventory/CvPage";
 import LorPage from "./pages/inventory/LorPage";
@@ -25,6 +27,7 @@ function App() {
       <Router>
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/quiz-selection" element={<QuizSelection />} />
           <Route path="/quiz-game" element={<QuizGame />} />
           <Route path="/magical-inventory" element={<MagicalInventory />} />
           <Route path="/inventory/cv" element={<CvPage />} />

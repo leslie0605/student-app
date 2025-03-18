@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { brainRegions, quizQuestions } from '@/data/brainQuizData';
@@ -6,6 +7,14 @@ import ProgressBar from '@/components/ProgressBar';
 import QuizFeedback from '@/components/QuizFeedback';
 import GameStats from '@/components/GameStats';
 import ResultsScreen, { QuizStats } from '@/components/ResultsScreen';
+import QuizReview from '@/components/QuizReview';
+import { 
+  isQuizCompleted, 
+  getCompletedQuiz, 
+  saveCompletedQuiz, 
+  UserQuizAnswer,
+  CompletedQuiz 
+} from '@/utils/quizUtils';
 import { toast } from 'sonner';
 import { Brain, ChevronLeft, Award, Trophy, Star, Badge, Sparkles } from 'lucide-react';
 
@@ -52,6 +61,8 @@ const DEFAULT_STATS: QuizStats = {
   achievements: []
 };
 
+const QUIZ_ID = 'brain-quiz';
+
 const QuizGame = () => {
   const navigate = useNavigate();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -66,12 +77,27 @@ const QuizGame = () => {
   });
   const [quizStats, setQuizStats] = useState<QuizStats>(DEFAULT_STATS);
   const [newAchievements, setNewAchievements] = useState<typeof ACHIEVEMENTS>([]);
+  const [isQuizAlreadyCompleted, setIsQuizAlreadyCompleted] = useState(false);
+  const [userAnswers, setUserAnswers] = useState<UserQuizAnswer[]>([]);
+  const [isInReviewMode, setIsInReviewMode] = useState(false);
 
   const currentQuestion = quizQuestions[currentQuestionIndex];
   const correctRegion = currentQuestion?.correctRegion;
 
-  // Load saved stats from localStorage on component mount
+  // Check if the quiz is already completed on component mount
   useEffect(() => {
+    const completed = isQuizCompleted(QUIZ_ID);
+    setIsQuizAlreadyCompleted(completed);
+    
+    if (completed) {
+      const completedQuiz = getCompletedQuiz(QUIZ_ID);
+      if (completedQuiz) {
+        setUserAnswers(completedQuiz.userAnswers);
+        setIsInReviewMode(true);
+      }
+    }
+    
+    // Load saved stats from localStorage
     const savedStats = localStorage.getItem('brainQuizStats');
     if (savedStats) {
       try {
@@ -89,7 +115,7 @@ const QuizGame = () => {
   }, [quizStats]);
   
   const handleRegionClick = (regionId: string) => {
-    if (selectedRegion || showFeedback) return;
+    if (selectedRegion || showFeedback || isInReviewMode) return;
     
     setSelectedRegion(regionId);
     
@@ -113,6 +139,16 @@ const QuizGame = () => {
       }));
       toast.error("Oops! Lost 10 HP");
     }
+    
+    // Save user answer
+    setUserAnswers(prev => [
+      ...prev,
+      {
+        questionId: currentQuestion.id,
+        selectedRegionId: regionId,
+        isCorrect: isCorrect
+      }
+    ]);
     
     setShowFeedback(true);
   };
@@ -157,6 +193,18 @@ const QuizGame = () => {
         });
       }
 
+      // Save completed quiz data
+      const completedQuiz: CompletedQuiz = {
+        quizId: QUIZ_ID,
+        completedAt: new Date().toISOString(),
+        score: gameStats.correctAnswers,
+        totalQuestions: quizQuestions.length,
+        userAnswers: userAnswers
+      };
+      
+      saveCompletedQuiz(completedQuiz);
+      setIsQuizAlreadyCompleted(true);
+      
       // Save updated stats
       setQuizStats(updatedStats);
       setNewAchievements(newUnlockedAchievements);
@@ -165,18 +213,11 @@ const QuizGame = () => {
   };
 
   const handlePlayAgain = () => {
-    // Reset quiz state but keep overall stats
-    setCurrentQuestionIndex(0);
-    setSelectedRegion(null);
-    setShowFeedback(false);
-    setShowResults(false);
-    setGameStats({
-      xp: 0,
-      health: 100,
-      streak: 0,
-      correctAnswers: 0
-    });
-    setNewAchievements([]);
+    navigate('/quiz-selection');
+  };
+  
+  const handleStartNewQuiz = () => {
+    setIsInReviewMode(false);
   };
 
   // Get brain regions for the current question's options
@@ -195,11 +236,11 @@ const QuizGame = () => {
       <div className="container mx-auto max-w-4xl">
         <div className="mb-8 flex items-center">
           <button 
-            onClick={() => navigate('/')}
+            onClick={() => navigate('/quiz-selection')}
             className="flex items-center gap-1 text-magic-dark/70 hover:text-magic-purple transition-all-200"
           >
             <ChevronLeft className="h-5 w-5" />
-            <span>Back to Home</span>
+            <span>Back to Quiz Selection</span>
           </button>
         </div>
         
@@ -214,13 +255,50 @@ const QuizGame = () => {
           </p>
         </div>
         
-        <GameStats 
-          xp={gameStats.xp} 
-          health={gameStats.health} 
-          streak={gameStats.streak} 
-        />
+        {!isInReviewMode && !isQuizAlreadyCompleted && (
+          <GameStats 
+            xp={gameStats.xp} 
+            health={gameStats.health} 
+            streak={gameStats.streak} 
+          />
+        )}
         
-        {!showResults ? (
+        {isInReviewMode ? (
+          <QuizReview 
+            userAnswers={userAnswers}
+            onStartNewQuiz={handleStartNewQuiz}
+          />
+        ) : isQuizAlreadyCompleted && !showResults ? (
+          <div className="w-full max-w-lg mx-auto p-6 rounded-xl glass-effect border border-magic-blue/20 shadow-lg animate-fade-up">
+            <div className="text-center mb-6">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-magic-purple/10 mb-4">
+                <Trophy className="h-8 w-8 text-magic-purple" />
+              </div>
+              <h2 className="text-2xl font-bold mb-2">Quiz Already Completed!</h2>
+              <p className="text-muted-foreground max-w-lg mx-auto">
+                You've already completed this quiz. Would you like to review your previous answers or try a different quiz?
+              </p>
+            </div>
+            
+            <div className="flex gap-3">
+              <button
+                onClick={() => setIsInReviewMode(true)}
+                className="flex-1 py-3 px-6 rounded-lg font-medium transition-all-200 shadow-md bg-gradient-to-r from-magic-blue to-magic-purple text-white hover:shadow-lg hover:translate-y-[-2px] flex items-center justify-center gap-2"
+              >
+                <Star className="h-5 w-5" />
+                Review Answers
+              </button>
+              
+              <button
+                onClick={() => navigate('/quiz-selection')}
+                className="flex-1 py-3 px-6 rounded-lg font-medium transition-all-200 shadow-md bg-white text-magic-dark border border-magic-blue/20 hover:bg-magic-blue/5 hover:border-magic-blue/30 flex items-center justify-center gap-2"
+              >
+                <ChevronLeft className="h-5 w-5" />
+                Quiz Selection
+              </button>
+            </div>
+          </div>
+        ) : !showResults ? (
           <>
             <ProgressBar 
               currentStep={currentQuestionIndex + 1} 

@@ -64,7 +64,7 @@ const Index = () => {
             style={{ animationDelay: "0.3s" }}
           >
             <button
-              onClick={() => navigate("/quiz-game")}
+              onClick={() => navigate("/quiz-selection")}
               className={cn(
                 "py-3 px-8 rounded-lg font-medium transition-all-200 shadow-md",
                 "bg-gradient-to-r from-magic-blue to-magic-purple text-white",
