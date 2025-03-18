@@ -1,3 +1,4 @@
+
 export interface Concept {
   id: string;
   name: string;
@@ -14,9 +15,9 @@ export interface QuizQuestion {
 
 export const quizMetadata = {
   id: "music-quiz",
-  title: "Quiz on music Concepts",
+  title: "Quiz on Music Concepts",
   description: "Test your knowledge about music concepts.",
-  icon: "book",
+  icon: "music",
 };
 
 export const concepts: Concept[] = [
@@ -59,7 +60,7 @@ export const quizQuestions: QuizQuestion[] = [
     explanation:
       "Jazz music originated in the African-American communities of New Orleans, United States in the late 19th and early 20th centuries.",
     correctConcept: "concept-2",
-    options: ["Classical", "Jazz", "Rock", "Pop"],
+    options: ["concept-1", "concept-2", "concept-3", "concept-4"],
   },
   {
     id: 2,
@@ -68,7 +69,7 @@ export const quizQuestions: QuizQuestion[] = [
     explanation:
       "Hip Hop music, also known as rap music, developed in the United States by inner-city African Americans and Latino Americans in the Bronx borough of New York City in the 1970s.",
     correctConcept: "concept-5",
-    options: ["Classical", "Jazz", "Rock", "Hip Hop"],
+    options: ["concept-1", "concept-2", "concept-3", "concept-5"],
   },
   {
     id: 3,
@@ -77,7 +78,7 @@ export const quizQuestions: QuizQuestion[] = [
     explanation:
       "Rock music is a genre of popular music that originated as 'rock and roll' in the United States in the late 1940s and early 1950s.",
     correctConcept: "concept-3",
-    options: ["Pop", "Jazz", "Rock", "Classical"],
+    options: ["concept-4", "concept-2", "concept-3", "concept-1"],
   },
   {
     id: 4,
@@ -86,7 +87,7 @@ export const quizQuestions: QuizQuestion[] = [
     explanation:
       "Pop music is a genre of popular music that originated in its modern form during the mid-1950s in the United States and the United Kingdom.",
     correctConcept: "concept-4",
-    options: ["Pop", "Hip Hop", "Rock", "Classical"],
+    options: ["concept-4", "concept-5", "concept-3", "concept-1"],
   },
   {
     id: 5,
@@ -95,6 +96,6 @@ export const quizQuestions: QuizQuestion[] = [
     explanation:
       "Classical music usually refers to the music produced in, or rooted in the traditions of Western liturgical and secular music.",
     correctConcept: "concept-1",
-    options: ["Rock", "Jazz", "Hip Hop", "Classical"],
+    options: ["concept-3", "concept-2", "concept-5", "concept-1"],
   },
 ];
