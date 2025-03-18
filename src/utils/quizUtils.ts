@@ -57,6 +57,7 @@ export interface QuizDataModule {
   questions: QuizQuestion[];
   concepts: Concept[];
   icon?: string;
+  image?: string;
 }
 
 // Quiz registry to store all registered quiz modules
@@ -154,6 +155,13 @@ export const loadQuizData = (quizId: string) => {
   return {
     questions: quiz.questions,
     options: quiz.concepts,
+    metadata: {
+      id: quiz.id,
+      title: quiz.title,
+      description: quiz.description,
+      icon: quiz.icon,
+      image: quiz.image
+    }
   };
 };
 
