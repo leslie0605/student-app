@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Brain, ArrowLeft, BookOpen, Atom, PieChart, Calculator } from 'lucide-react';
+import { ArrowLeft, BookOpen, Brain, Atom, PieChart, Calculator } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { getQuizTitle, getQuizDescriptions, isQuizCompleted, getAvailableQuizIds, getQuizIcon } from '@/utils/quizUtils';
 
@@ -13,7 +13,7 @@ interface QuizData {
   icon: React.ReactNode;
 }
 
-// Map of quiz icons by quiz ID
+// Map of quiz icons by icon name
 const quizIconMap: Record<string, React.ReactNode> = {
   'brain': <Brain className="h-8 w-8 text-magic-purple" />,
   'atom': <Atom className="h-8 w-8 text-magic-blue" />,
@@ -24,7 +24,7 @@ const quizIconMap: Record<string, React.ReactNode> = {
 // Default icon for quizzes without a specific icon
 const defaultQuizIcon = <BookOpen className="h-8 w-8 text-magic-purple" />;
 
-// Get the proper icon based on quiz ID or icon name
+// Get the proper icon based on icon name
 const getQuizIconComponent = (quizId: string): React.ReactNode => {
   const iconName = getQuizIcon(quizId);
   if (iconName && quizIconMap[iconName]) {

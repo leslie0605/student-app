@@ -1,4 +1,3 @@
-
 export interface Concept {
   id: string;
   name: string;
@@ -12,6 +11,13 @@ export interface QuizQuestion {
   correctConcept: string;
   options: string[];
 }
+
+export const quizMetadata = {
+  id: "math-quiz",
+  title: "Mathematics Quiz",
+  description: "Challenge yourself with various mathematical concepts and problem-solving.",
+  icon: "calculator"
+};
 
 export const concepts: Concept[] = [
   {
