@@ -1,3 +1,4 @@
+
 import { concepts as brainConcepts, quizQuestions as brainQuestions, quizMetadata as brainMetadata } from '@/data/brainQuizData';
 import { concepts as physicsConcepts, quizQuestions as physicsQuestions, quizMetadata as physicsMetadata } from '@/data/physicsQuizData';
 import { concepts as mathConcepts, quizQuestions as mathQuestions, quizMetadata as mathMetadata } from '@/data/mathQuizData';
@@ -74,6 +75,15 @@ const quizDataRegistry: QuizDataModule[] = [
     concepts: mathConcepts
   }
 ];
+
+// Function to dynamically register a new quiz module
+export const registerQuizModule = (module: QuizDataModule) => {
+  // Check if a module with this ID already exists
+  if (!quizDataRegistry.some(quiz => quiz.id === module.id)) {
+    quizDataRegistry.push(module);
+    console.log(`New quiz module registered: ${module.id}`);
+  }
+};
 
 // Get quiz title based on quiz ID
 export const getQuizTitle = (quizId: string): string => {

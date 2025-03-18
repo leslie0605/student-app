@@ -1,0 +1,50 @@
+
+// Example of how to create a new quiz data file:
+// 1. Name your file with the pattern: [name]QuizData.ts
+// 2. Include the following exports:
+
+export interface Concept {
+  id: string;
+  name: string;
+  description: string;
+}
+
+export interface QuizQuestion {
+  id: number;
+  question: string;
+  explanation: string;
+  correctConcept: string; // or correctRegion depending on your quiz type
+  options: string[];
+}
+
+// Required metadata for the quiz
+export const quizMetadata = {
+  id: "example-quiz", // Unique identifier for the quiz
+  title: "Example Quiz", // Display title
+  description: "Description of your new quiz.", // Brief description
+  icon: "calculator" // One of: 'brain', 'atom', 'calculator', 'pie-chart', or omit for default
+};
+
+// Your quiz concepts/topics
+export const concepts: Concept[] = [
+  {
+    id: "concept-1",
+    name: "First Concept",
+    description: "Description of first concept",
+  },
+  // Add more concepts...
+];
+
+// Your quiz questions
+export const quizQuestions: QuizQuestion[] = [
+  {
+    id: 1,
+    question: "Your question here?",
+    explanation: "Explanation of the answer",
+    correctConcept: "concept-1", // Must match a concept id
+    options: ["concept-1", "concept-2", "concept-3", "concept-4"], // Choices for the question
+  },
+  // Add more questions...
+];
+
+// 3. After creating your file, it will be automatically discovered when the app refreshes
