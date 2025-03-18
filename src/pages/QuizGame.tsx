@@ -464,23 +464,25 @@ const QuizGame = () => {
                     disabled={!!selectedOption || showFeedback}
                   />
                 ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
                     {displayOptions.map((option: any) => (
                       <button
                         key={option.id}
-                        onClick={() => handleOptionClick(option.id)}
+                        onClick={() => !disabled && handleOptionClick(option.id)}
                         disabled={!!selectedOption || showFeedback}
                         className={cn(
-                          "p-4 rounded-lg border text-left transition-all",
-                          selectedOption === option.id
-                            ? "bg-magic-purple/10 border-magic-purple/30"
-                            : "bg-white hover:bg-gray-50 border-gray-200"
+                          "text-xs sm:text-sm p-2 h-auto transition-all duration-300",
+                          "focus:outline-none focus:ring-2 focus:ring-magic-purple focus:ring-offset-2",
+                          option.id === selectedOption
+                            ? "bg-magic-pink text-white shadow-lg"
+                            : option.id === correctOptionId && selectedOption
+                            ? "bg-green-500 text-white border-green-600"
+                            : "bg-magic-purple/10 hover:bg-magic-purple/20 text-magic-dark"
                         )}
+                        aria-label={option.name}
+                        title={option.name}
                       >
-                        <h3 className="font-medium mb-1">{option.name}</h3>
-                        <p className="text-sm text-muted-foreground">
-                          {option.description}
-                        </p>
+                        {option.name}
                       </button>
                     ))}
                   </div>
