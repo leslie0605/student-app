@@ -1,13 +1,11 @@
-
-import React, { useEffect } from 'react';
-import { MessageCircle } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import React, { useEffect } from "react";
+import { Button } from "@/components/ui/button";
 
 const MentorChatButton = () => {
   useEffect(() => {
     // Add Voiceflow chat script to the document
-    const script = document.createElement('script');
-    script.type = 'text/javascript';
+    const script = document.createElement("script");
+    script.type = "text/javascript";
     script.text = `
       (function(d, t) {
           var v = d.createElement(t), s = d.getElementsByTagName(t)[0];
@@ -24,16 +22,16 @@ const MentorChatButton = () => {
           v.src = "https://cdn.voiceflow.com/widget-next/bundle.mjs"; v.type = "text/javascript"; s.parentNode.insertBefore(v, s);
       })(document, 'script');
     `;
-    
+
     // Add the script to the document
     document.head.appendChild(script);
-    
+
     // Clean up function to remove script when component unmounts
     return () => {
       document.head.removeChild(script);
     };
   }, []);
-  
+
   // The button now just triggers the Voiceflow chat
   return (
     <Button
@@ -45,9 +43,7 @@ const MentorChatButton = () => {
       }}
       className="fixed bottom-4 right-4 shadow-lg rounded-full h-12 w-12 p-0 z-50"
       size="icon"
-    >
-      <MessageCircle className="h-6 w-6" />
-    </Button>
+    ></Button>
   );
 };
 
