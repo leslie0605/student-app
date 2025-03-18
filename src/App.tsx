@@ -28,7 +28,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/quiz-selection" element={<QuizSelection />} />
-          <Route path="/quiz-game" element={<QuizGame />} />
+          <Route path="/quiz-game/:quizId" element={<QuizGame />} />
           <Route path="/magical-inventory" element={<MagicalInventory />} />
           <Route path="/inventory/cv" element={<CvPage />} />
           <Route path="/inventory/lor" element={<LorPage />} />

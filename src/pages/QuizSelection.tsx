@@ -3,6 +3,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Brain, ArrowLeft, BookOpen, Atom, PieChart, Calculator } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { getQuizTitle, getQuizDescriptions, isQuizCompleted } from '@/utils/quizUtils';
 
 // Interface for quiz data
 interface QuizData {
@@ -11,7 +12,6 @@ interface QuizData {
   description: string;
   icon: React.ReactNode;
   available: boolean;
-  path: string;
 }
 
 const QuizSelection = () => {
@@ -21,37 +21,38 @@ const QuizSelection = () => {
   const quizzes: QuizData[] = [
     {
       id: 'brain-quiz',
-      title: 'Brain Function Quiz',
-      description: 'Test your knowledge about different brain regions and their functions.',
+      title: getQuizTitle('brain-quiz'),
+      description: getQuizDescriptions('brain-quiz'),
       icon: <Brain className="h-8 w-8 text-magic-purple" />,
-      available: true,
-      path: '/quiz-game'
+      available: true
     },
     {
       id: 'psychology-quiz',
-      title: 'Psychology Concepts',
-      description: 'Learn about fundamental psychological theories and principles.',
+      title: getQuizTitle('psychology-quiz'),
+      description: getQuizDescriptions('psychology-quiz'),
       icon: <PieChart className="h-8 w-8 text-magic-pink" />,
-      available: false,
-      path: '/quiz-game/psychology'
+      available: false
     },
     {
       id: 'science-quiz',
-      title: 'Science Fundamentals',
-      description: 'Test your knowledge of basic scientific principles and discoveries.',
+      title: getQuizTitle('science-quiz'),
+      description: getQuizDescriptions('science-quiz'),
       icon: <Atom className="h-8 w-8 text-magic-blue" />,
-      available: false,
-      path: '/quiz-game/science'
+      available: false
     },
     {
       id: 'math-quiz',
-      title: 'Mathematical Reasoning',
-      description: 'Challenge yourself with mathematical problems and concepts.',
+      title: getQuizTitle('math-quiz'),
+      description: getQuizDescriptions('math-quiz'),
       icon: <Calculator className="h-8 w-8 text-emerald-500" />,
-      available: false,
-      path: '/quiz-game/math'
+      available: false
     }
   ];
+
+  const handleQuizSelect = (quizId: string, available: boolean) => {
+    if (!available) return;
+    navigate(`/quiz-game/${quizId}`);
+  };
 
   return (
     <div className="min-h-screen pt-24 pb-12 px-4 bg-gradient-to-b from-magic-light to-white">
@@ -78,45 +79,58 @@ const QuizSelection = () => {
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-          {quizzes.map((quiz) => (
-            <div 
-              key={quiz.id}
-              className={cn(
-                "p-6 rounded-xl border transition-all duration-300",
-                "hover:shadow-lg hover:translate-y-[-2px]",
-                quiz.available 
-                  ? "bg-white border-magic-purple/30 cursor-pointer" 
-                  : "bg-gray-50 border-gray-200 opacity-70 cursor-not-allowed"
-              )}
-              onClick={() => quiz.available && navigate(quiz.path)}
-            >
-              <div className="flex items-start gap-4">
-                <div className="flex-shrink-0 w-16 h-16 rounded-full bg-magic-purple/10 flex items-center justify-center">
-                  {quiz.icon}
-                </div>
-                
-                <div className="flex-1">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-xl font-bold mb-2">{quiz.title}</h3>
-                    {!quiz.available && (
-                      <span className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full">
-                        Coming Soon
-                      </span>
+          {quizzes.map((quiz) => {
+            const completed = isQuizCompleted(quiz.id);
+            
+            return (
+              <div 
+                key={quiz.id}
+                className={cn(
+                  "p-6 rounded-xl border transition-all duration-300",
+                  "hover:shadow-lg hover:translate-y-[-2px]",
+                  quiz.available 
+                    ? "bg-white border-magic-purple/30 cursor-pointer" 
+                    : "bg-gray-50 border-gray-200 opacity-70 cursor-not-allowed"
+                )}
+                onClick={() => handleQuizSelect(quiz.id, quiz.available)}
+              >
+                <div className="flex items-start gap-4">
+                  <div className="flex-shrink-0 w-16 h-16 rounded-full bg-magic-purple/10 flex items-center justify-center">
+                    {quiz.icon}
+                  </div>
+                  
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-xl font-bold mb-2">{quiz.title}</h3>
+                      {!quiz.available ? (
+                        <span className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full">
+                          Coming Soon
+                        </span>
+                      ) : completed ? (
+                        <span className="px-2 py-1 bg-green-100 text-green-600 text-xs rounded-full">
+                          Completed
+                        </span>
+                      ) : null}
+                    </div>
+                    <p className="text-muted-foreground">{quiz.description}</p>
+                    
+                    {quiz.available && (
+                      <button 
+                        className={cn(
+                          "mt-4 px-4 py-2 rounded-lg text-sm font-medium transition-colors",
+                          completed 
+                            ? "bg-green-100 text-green-700 hover:bg-green-200" 
+                            : "bg-magic-purple/10 text-magic-purple hover:bg-magic-purple/20"
+                        )}
+                      >
+                        {completed ? "Review Quiz" : "Start Quiz"}
+                      </button>
                     )}
                   </div>
-                  <p className="text-muted-foreground">{quiz.description}</p>
-                  
-                  {quiz.available && (
-                    <button 
-                      className="mt-4 px-4 py-2 bg-magic-purple/10 text-magic-purple rounded-lg text-sm font-medium hover:bg-magic-purple/20 transition-colors"
-                    >
-                      Start Quiz
-                    </button>
-                  )}
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>

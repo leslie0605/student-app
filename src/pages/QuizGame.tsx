@@ -1,32 +1,37 @@
 
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { brainRegions, quizQuestions } from '@/data/brainQuizData';
+import { useNavigate, useParams } from 'react-router-dom';
 import BrainDiagram from '@/components/BrainDiagram';
 import ProgressBar from '@/components/ProgressBar';
 import QuizFeedback from '@/components/QuizFeedback';
 import GameStats from '@/components/GameStats';
-import ResultsScreen, { QuizStats } from '@/components/ResultsScreen';
+import ResultsScreen from '@/components/ResultsScreen';
 import QuizReview from '@/components/QuizReview';
 import { 
   isQuizCompleted, 
   getCompletedQuiz, 
   saveCompletedQuiz, 
   UserQuizAnswer,
-  CompletedQuiz 
+  CompletedQuiz,
+  loadQuizData,
+  getQuizTitle,
+  getQuizDescriptions,
+  getQuizStats,
+  saveQuizStats
 } from '@/utils/quizUtils';
 import { toast } from 'sonner';
 import { Brain, ChevronLeft, Award, Trophy, Star, Badge, Sparkles } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 // Define achievements with multiple levels
 const ACHIEVEMENTS = [
   // Brain Master achievements (Answer questions)
   ...[5, 10, 15, 20, 25, 30, 35, 40, 45, 50].map((threshold, index) => ({
-    id: `brain_master_${index + 1}`,
-    name: 'Brain Master',
+    id: `quiz_master_${index + 1}`,
+    name: 'Quiz Master',
     description: `Answer ${threshold} questions correctly`,
     icon: <Brain className="h-5 w-5 text-amber-500" />,
-    condition: (stats: QuizStats) => stats.totalCorrect >= threshold,
+    condition: (stats: any) => stats.totalCorrect >= threshold,
     level: index + 1
   })),
 
@@ -36,7 +41,7 @@ const ACHIEVEMENTS = [
     name: 'XP Champ',
     description: `Earn ${threshold} XP total`,
     icon: <Sparkles className="h-5 w-5 text-amber-500" />,
-    condition: (stats: QuizStats) => stats.totalXP >= threshold,
+    condition: (stats: any) => stats.totalXP >= threshold,
     level: index + 1
   })),
 
@@ -46,27 +51,18 @@ const ACHIEVEMENTS = [
     name: 'Streak Legend',
     description: `Achieve a streak of ${threshold}`,
     icon: <Star className="h-5 w-5 text-amber-500" />,
-    condition: (stats: QuizStats) => stats.highestStreak >= threshold,
+    condition: (stats: any) => stats.highestStreak >= threshold,
     level: index + 1
   }))
 ];
 
-// Default stats
-const DEFAULT_STATS: QuizStats = {
-  totalAnswered: 0,
-  totalCorrect: 0,
-  highestStreak: 0,
-  totalXP: 0,
-  completedQuizzes: 0,
-  achievements: []
-};
-
-const QUIZ_ID = 'brain-quiz';
-
 const QuizGame = () => {
   const navigate = useNavigate();
+  const { quizId = 'brain-quiz' } = useParams<{ quizId: string }>();
+  
+  const [quizData, setQuizData] = useState<{ questions: any[], options: any[] } | null>(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [selectedRegion, setSelectedRegion] = useState<string | null>(null);
+  const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [showFeedback, setShowFeedback] = useState(false);
   const [showResults, setShowResults] = useState(false);
   const [gameStats, setGameStats] = useState({
@@ -75,51 +71,144 @@ const QuizGame = () => {
     streak: 0,
     correctAnswers: 0
   });
-  const [quizStats, setQuizStats] = useState<QuizStats>(DEFAULT_STATS);
-  const [newAchievements, setNewAchievements] = useState<typeof ACHIEVEMENTS>([]);
+  const [quizStats, setQuizStats] = useState(getQuizStats());
+  const [newAchievements, setNewAchievements] = useState<any[]>([]);
   const [isQuizAlreadyCompleted, setIsQuizAlreadyCompleted] = useState(false);
   const [userAnswers, setUserAnswers] = useState<UserQuizAnswer[]>([]);
   const [isInReviewMode, setIsInReviewMode] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const currentQuestion = quizQuestions[currentQuestionIndex];
-  const correctRegion = currentQuestion?.correctRegion;
-
-  // Check if the quiz is already completed on component mount
+  // Load quiz data and check if it's already completed
   useEffect(() => {
-    const completed = isQuizCompleted(QUIZ_ID);
-    setIsQuizAlreadyCompleted(completed);
-    
-    if (completed) {
-      const completedQuiz = getCompletedQuiz(QUIZ_ID);
-      if (completedQuiz) {
-        setUserAnswers(completedQuiz.userAnswers);
-        setIsInReviewMode(true);
-      }
-    }
-    
-    // Load saved stats from localStorage
-    const savedStats = localStorage.getItem('brainQuizStats');
-    if (savedStats) {
+    const loadQuiz = async () => {
+      setLoading(true);
+      setError(null);
+      
       try {
-        const parsedStats = JSON.parse(savedStats);
-        setQuizStats(parsedStats);
+        // Load quiz data based on quizId
+        const data = loadQuizData(quizId);
+        if (!data) {
+          setError(`Quiz data for ${quizId} not found or not yet implemented.`);
+          return;
+        }
+        
+        setQuizData(data);
+        
+        // Check if quiz is already completed
+        const completed = isQuizCompleted(quizId);
+        setIsQuizAlreadyCompleted(completed);
+        
+        if (completed) {
+          const completedQuiz = getCompletedQuiz(quizId);
+          if (completedQuiz) {
+            setUserAnswers(completedQuiz.userAnswers);
+            setIsInReviewMode(true);
+          }
+        }
       } catch (e) {
-        console.error('Error parsing saved quiz stats', e);
+        console.error("Error loading quiz:", e);
+        setError("Failed to load quiz data. Please try again later.");
+      } finally {
+        setLoading(false);
       }
-    }
-  }, []);
+    };
+    
+    loadQuiz();
+  }, [quizId]);
 
-  // Save stats to localStorage whenever they change
-  useEffect(() => {
-    localStorage.setItem('brainQuizStats', JSON.stringify(quizStats));
-  }, [quizStats]);
+  // Early returns for loading and error states
+  if (loading) {
+    return (
+      <div className="min-h-screen pt-24 pb-12 px-4 bg-gradient-to-b from-magic-light to-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-magic-purple border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]" role="status">
+            <span className="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">Loading...</span>
+          </div>
+          <p className="mt-2 text-muted-foreground">Loading quiz...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen pt-24 pb-12 px-4 bg-gradient-to-b from-magic-light to-white">
+        <div className="container mx-auto max-w-4xl">
+          <div className="mb-8 flex items-center">
+            <button 
+              onClick={() => navigate('/quiz-selection')}
+              className="flex items-center gap-1 text-magic-dark/70 hover:text-magic-purple transition-all-200"
+            >
+              <ChevronLeft className="h-5 w-5" />
+              <span>Back to Quiz Selection</span>
+            </button>
+          </div>
+          
+          <div className="w-full max-w-lg mx-auto p-6 rounded-xl glass-effect border border-magic-pink/20 shadow-lg">
+            <div className="text-center">
+              <h2 className="text-2xl font-bold mb-2 text-magic-pink">Error</h2>
+              <p className="text-muted-foreground">{error}</p>
+              <button
+                onClick={() => navigate('/quiz-selection')}
+                className="mt-6 py-3 px-6 rounded-lg font-medium transition-all-200 shadow-md bg-gradient-to-r from-magic-blue to-magic-purple text-white hover:shadow-lg hover:translate-y-[-2px]"
+              >
+                Return to Quiz Selection
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!quizData) {
+    return (
+      <div className="min-h-screen pt-24 pb-12 px-4 bg-gradient-to-b from-magic-light to-white">
+        <div className="container mx-auto max-w-4xl">
+          <div className="mb-8 flex items-center">
+            <button 
+              onClick={() => navigate('/quiz-selection')}
+              className="flex items-center gap-1 text-magic-dark/70 hover:text-magic-purple transition-all-200"
+            >
+              <ChevronLeft className="h-5 w-5" />
+              <span>Back to Quiz Selection</span>
+            </button>
+          </div>
+          
+          <div className="w-full max-w-lg mx-auto p-6 rounded-xl glass-effect border border-magic-pink/20 shadow-lg">
+            <div className="text-center">
+              <h2 className="text-2xl font-bold mb-2 text-magic-pink">Quiz Not Available</h2>
+              <p className="text-muted-foreground">This quiz is not yet available or under development.</p>
+              <button
+                onClick={() => navigate('/quiz-selection')}
+                className="mt-6 py-3 px-6 rounded-lg font-medium transition-all-200 shadow-md bg-gradient-to-r from-magic-blue to-magic-purple text-white hover:shadow-lg hover:translate-y-[-2px]"
+              >
+                Return to Quiz Selection
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const { questions, options } = quizData;
+  const currentQuestion = questions[currentQuestionIndex];
+  const correctOptionId = currentQuestion?.correctRegion;
   
-  const handleRegionClick = (regionId: string) => {
-    if (selectedRegion || showFeedback || isInReviewMode) return;
+  // Find the selected and correct option objects
+  const selectedOptionObject = selectedOption ? 
+    options.find((option: any) => option.id === selectedOption) || null : null;
     
-    setSelectedRegion(regionId);
+  const correctOptionObject = options.find((option: any) => option.id === correctOptionId) || options[0];
+
+  const handleOptionClick = (optionId: string) => {
+    if (selectedOption || showFeedback || isInReviewMode) return;
     
-    const isCorrect = regionId === correctRegion;
+    setSelectedOption(optionId);
+    
+    const isCorrect = optionId === correctOptionId;
     
     // Update game stats
     if (isCorrect) {
@@ -145,7 +234,7 @@ const QuizGame = () => {
       ...prev,
       {
         questionId: currentQuestion.id,
-        selectedRegionId: regionId,
+        selectedOptionId: optionId,
         isCorrect: isCorrect
       }
     ]);
@@ -154,14 +243,14 @@ const QuizGame = () => {
   };
   
   const handleNextQuestion = () => {
-    if (currentQuestionIndex < quizQuestions.length - 1) {
+    if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(prev => prev + 1);
-      setSelectedRegion(null);
+      setSelectedOption(null);
       setShowFeedback(false);
     } else {
       // End of quiz - Show results screen
-      const updatedStats: QuizStats = {
-        totalAnswered: quizStats.totalAnswered + quizQuestions.length,
+      const updatedStats = {
+        totalAnswered: quizStats.totalAnswered + questions.length,
         totalCorrect: quizStats.totalCorrect + gameStats.correctAnswers,
         highestStreak: Math.max(quizStats.highestStreak, gameStats.streak),
         totalXP: quizStats.totalXP + gameStats.xp,
@@ -195,10 +284,10 @@ const QuizGame = () => {
 
       // Save completed quiz data
       const completedQuiz: CompletedQuiz = {
-        quizId: QUIZ_ID,
+        quizId,
         completedAt: new Date().toISOString(),
         score: gameStats.correctAnswers,
-        totalQuestions: quizQuestions.length,
+        totalQuestions: questions.length,
         userAnswers: userAnswers
       };
       
@@ -207,6 +296,7 @@ const QuizGame = () => {
       
       // Save updated stats
       setQuizStats(updatedStats);
+      saveQuizStats(updatedStats);
       setNewAchievements(newUnlockedAchievements);
       setShowResults(true);
     }
@@ -220,16 +310,24 @@ const QuizGame = () => {
     setIsInReviewMode(false);
   };
 
-  // Get brain regions for the current question's options
-  const displayRegions = currentQuestion 
-    ? brainRegions.filter(region => currentQuestion.options.includes(region.id))
+  // Get options for the current question
+  const displayOptions = currentQuestion 
+    ? options.filter((option: any) => currentQuestion.options.includes(option.id))
     : [];
 
-  // Find the selected and correct brain region objects
-  const selectedRegionObject = selectedRegion ? 
-    brainRegions.find(region => region.id === selectedRegion) || null : null;
-    
-  const correctRegionObject = brainRegions.find(region => region.id === correctRegion) || brainRegions[0];
+  // Get quiz title and icon based on quiz ID
+  const quizTitle = getQuizTitle(quizId);
+  const quizDescription = getQuizDescriptions(quizId);
+  
+  const getQuizIcon = () => {
+    switch (quizId) {
+      case 'brain-quiz': return <Brain className="h-4 w-4" />;
+      case 'psychology-quiz': return <PieChart className="h-4 w-4" />;
+      case 'science-quiz': return <Atom className="h-4 w-4" />;
+      case 'math-quiz': return <Calculator className="h-4 w-4" />;
+      default: return <Brain className="h-4 w-4" />;
+    }
+  };
 
   return (
     <div className="min-h-screen pt-24 pb-12 px-4 bg-gradient-to-b from-magic-light to-white">
@@ -246,12 +344,12 @@ const QuizGame = () => {
         
         <div className="mb-8 text-center">
           <div className="inline-flex items-center gap-2 bg-magic-purple/10 px-3 py-1 rounded-full text-magic-purple text-sm font-medium mb-2">
-            <Brain className="h-4 w-4" />
-            <span>Brain Function Quiz</span>
+            {getQuizIcon()}
+            <span>{quizTitle}</span>
           </div>
-          <h1 className="text-3xl md:text-4xl font-bold mb-3">Discover How Your Brain Works</h1>
+          <h1 className="text-3xl md:text-4xl font-bold mb-3">Test Your Knowledge</h1>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            Explore the fascinating world of neuroscience by identifying which brain regions are responsible for everyday experiences.
+            {quizDescription}
           </p>
         </div>
         
@@ -302,7 +400,7 @@ const QuizGame = () => {
           <>
             <ProgressBar 
               currentStep={currentQuestionIndex + 1} 
-              totalSteps={quizQuestions.length}
+              totalSteps={questions.length}
               className="mb-8"
             />
             
@@ -311,22 +409,41 @@ const QuizGame = () => {
                 <div className="p-6 rounded-xl glass-effect shadow-lg border border-magic-blue/20">
                   <h2 className="text-xl font-bold mb-4">Question {currentQuestionIndex + 1}:</h2>
                   <p className="text-lg mb-4">{currentQuestion.question}</p>
-                  <p className="text-sm text-muted-foreground">Select the brain region you think is responsible:</p>
+                  <p className="text-sm text-muted-foreground">Select the correct answer:</p>
                 </div>
                 
-                <BrainDiagram 
-                  regions={displayRegions}
-                  selectedRegion={selectedRegion}
-                  correctRegion={showFeedback ? correctRegion : null}
-                  onRegionClick={handleRegionClick}
-                  disabled={!!selectedRegion || showFeedback}
-                />
+                {quizId === 'brain-quiz' ? (
+                  <BrainDiagram 
+                    regions={displayOptions}
+                    selectedRegion={selectedOption}
+                    correctRegion={showFeedback ? correctOptionId : null}
+                    onRegionClick={handleOptionClick}
+                    disabled={!!selectedOption || showFeedback}
+                  />
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {displayOptions.map((option: any) => (
+                      <button
+                        key={option.id}
+                        onClick={() => handleOptionClick(option.id)}
+                        disabled={!!selectedOption || showFeedback}
+                        className={cn(
+                          "p-4 rounded-lg border text-left transition-all",
+                          selectedOption === option.id ? "bg-magic-purple/10 border-magic-purple/30" : "bg-white hover:bg-gray-50 border-gray-200"
+                        )}
+                      >
+                        <h3 className="font-medium mb-1">{option.name}</h3>
+                        <p className="text-sm text-muted-foreground">{option.description}</p>
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
             ) : (
               <QuizFeedback 
-                isCorrect={selectedRegion === correctRegion}
-                selectedRegion={selectedRegionObject}
-                correctRegion={correctRegionObject}
+                isCorrect={selectedOption === correctOptionId}
+                selectedRegion={selectedOptionObject}
+                correctRegion={correctOptionObject}
                 explanation={currentQuestion.explanation}
                 onNext={handleNextQuestion}
               />
@@ -335,7 +452,7 @@ const QuizGame = () => {
         ) : (
           <ResultsScreen 
             score={gameStats.correctAnswers}
-            totalQuestions={quizQuestions.length}
+            totalQuestions={questions.length}
             stats={quizStats}
             newAchievements={newAchievements}
             onPlayAgain={handlePlayAgain}

@@ -1,9 +1,10 @@
 
 import React from 'react';
 import { UserQuizAnswer } from '@/utils/quizUtils';
-import { quizQuestions, brainRegions } from '@/data/brainQuizData';
+import { loadQuizData } from '@/utils/quizUtils';
 import { CheckCircle, XCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useParams } from 'react-router-dom';
 
 interface QuizReviewProps {
   userAnswers: UserQuizAnswer[];
@@ -11,7 +12,14 @@ interface QuizReviewProps {
 }
 
 const QuizReview: React.FC<QuizReviewProps> = ({ userAnswers, onStartNewQuiz }) => {
-  if (!userAnswers.length) return null;
+  const { quizId = 'brain-quiz' } = useParams<{ quizId: string }>();
+  
+  // Load quiz data
+  const quizData = loadQuizData(quizId);
+  
+  if (!quizData || !userAnswers.length) return null;
+  
+  const { questions, options } = quizData;
   
   return (
     <div className="w-full max-w-3xl mx-auto">
@@ -24,14 +32,14 @@ const QuizReview: React.FC<QuizReviewProps> = ({ userAnswers, onStartNewQuiz }) 
       
       <div className="space-y-6 mb-8">
         {userAnswers.map((answer) => {
-          const question = quizQuestions.find(q => q.id === answer.questionId);
+          const question = questions.find((q: any) => q.id === answer.questionId);
           if (!question) return null;
           
-          const selectedRegion = answer.selectedRegionId 
-            ? brainRegions.find(r => r.id === answer.selectedRegionId)
+          const selectedOption = answer.selectedOptionId 
+            ? options.find((r: any) => r.id === answer.selectedOptionId)
             : null;
             
-          const correctRegion = brainRegions.find(r => r.id === question.correctRegion);
+          const correctOption = options.find((r: any) => r.id === question.correctRegion);
           
           return (
             <div 
@@ -60,14 +68,14 @@ const QuizReview: React.FC<QuizReviewProps> = ({ userAnswers, onStartNewQuiz }) 
                     )}>
                       <h4 className="text-sm font-medium mb-1">Your Answer:</h4>
                       <p className={answer.isCorrect ? "text-green-700" : "text-red-700"}>
-                        {selectedRegion?.name || "No answer selected"}
+                        {selectedOption?.name || "No answer selected"}
                       </p>
                     </div>
                     
                     {!answer.isCorrect && (
                       <div className="p-3 rounded-lg bg-green-50 border border-green-100">
                         <h4 className="text-sm font-medium mb-1">Correct Answer:</h4>
-                        <p className="text-green-700">{correctRegion?.name}</p>
+                        <p className="text-green-700">{correctOption?.name}</p>
                       </div>
                     )}
                   </div>
