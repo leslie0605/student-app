@@ -18,6 +18,7 @@ export const quizMetadata = {
   title: "Quiz on Music Concepts",
   description: "Test your knowledge about music concepts.",
   icon: "music",
+  image: "https://images.unsplash.com/photo-1507838153414-b4b713384a76?auto=format&fit=crop&w=800&q=80",
 };
 
 export const concepts: Concept[] = [

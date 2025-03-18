@@ -15,9 +15,9 @@ export interface QuizQuestion {
 export const quizMetadata = {
   id: "biology-quiz",
   title: "Biology Concepts Quiz",
-  description:
-    "Test your knowledge of key biology concepts through real-life scenarios and applications.",
+  description: "Test your knowledge of key biology concepts through real-life scenarios and applications.",
   icon: "dna",
+  image: "https://images.unsplash.com/photo-1581093588401-fbb62a02f120?auto=format&fit=crop&w=800&q=80",
 };
 
 export const concepts: Concept[] = [

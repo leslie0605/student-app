@@ -17,6 +17,7 @@ export const quizMetadata = {
   title: "Physics Concepts Quiz",
   description: "Learn about fundamental physics concepts and phenomena.",
   icon: "atom",
+  image: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?auto=format&fit=crop&w=800&q=80",
 };
 
 export const concepts: Concept[] = [

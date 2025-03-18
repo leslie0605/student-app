@@ -16,7 +16,8 @@ export const quizMetadata = {
   id: "math-quiz",
   title: "Mathematics Quiz",
   description: "Challenge yourself with various mathematical concepts and problem-solving.",
-  icon: "calculator"
+  icon: "calculator",
+  image: "https://images.unsplash.com/photo-1509228468518-180dd4864904?auto=format&fit=crop&w=800&q=80",
 };
 
 export const concepts: Concept[] = [

@@ -15,9 +15,9 @@ export interface QuizQuestion {
 export const quizMetadata = {
   id: "brain-quiz",
   title: "Brain Regions Quiz",
-  description:
-    "Test your knowledge about different brain regions and their functions.",
+  description: "Test your knowledge about different brain regions and their functions.",
   icon: "brain",
+  image: "/lovable-uploads/22d2e7af-4b10-4247-b980-a365152c6ff1.png",
 };
 
 export const concepts: Concept[] = [
