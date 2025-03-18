@@ -3,7 +3,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Brain, ArrowLeft, BookOpen, Atom, PieChart, Calculator } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { getQuizTitle, getQuizDescriptions, isQuizCompleted, getAvailableQuizIds } from '@/utils/quizUtils';
+import { getQuizTitle, getQuizDescriptions, isQuizCompleted, getAvailableQuizIds, getQuizIcon } from '@/utils/quizUtils';
 
 // Interface for quiz data
 interface QuizData {
@@ -15,12 +15,23 @@ interface QuizData {
 
 // Map of quiz icons by quiz ID
 const quizIconMap: Record<string, React.ReactNode> = {
-  'brain-quiz': <Brain className="h-8 w-8 text-magic-purple" />,
-  'physics-quiz': <Atom className="h-8 w-8 text-magic-blue" />,
+  'brain': <Brain className="h-8 w-8 text-magic-purple" />,
+  'atom': <Atom className="h-8 w-8 text-magic-blue" />,
+  'calculator': <Calculator className="h-8 w-8 text-magic-green" />,
+  'pie-chart': <PieChart className="h-8 w-8 text-magic-orange" />,
 };
 
 // Default icon for quizzes without a specific icon
 const defaultQuizIcon = <BookOpen className="h-8 w-8 text-magic-purple" />;
+
+// Get the proper icon based on quiz ID or icon name
+const getQuizIconComponent = (quizId: string): React.ReactNode => {
+  const iconName = getQuizIcon(quizId);
+  if (iconName && quizIconMap[iconName]) {
+    return quizIconMap[iconName];
+  }
+  return defaultQuizIcon;
+};
 
 const QuizSelection = () => {
   const navigate = useNavigate();
@@ -31,7 +42,7 @@ const QuizSelection = () => {
     id: quizId,
     title: getQuizTitle(quizId),
     description: getQuizDescriptions(quizId),
-    icon: quizIconMap[quizId] || defaultQuizIcon
+    icon: getQuizIconComponent(quizId)
   }));
 
   const handleQuizSelect = (quizId: string) => {

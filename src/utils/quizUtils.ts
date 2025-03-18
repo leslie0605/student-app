@@ -1,6 +1,7 @@
 
 import { concepts as brainConcepts, quizQuestions as brainQuestions } from '@/data/brainQuizData';
 import { concepts as physicsConcepts, quizQuestions as physicsQuestions } from '@/data/physicsQuizData';
+import { concepts as mathConcepts, quizQuestions as mathQuestions } from '@/data/mathQuizData';
 import { toast } from 'sonner';
 
 // Types for quiz data
@@ -14,7 +15,8 @@ export interface QuizQuestion {
   id: number;
   question: string;
   explanation: string;
-  correctRegion: string;
+  correctRegion?: string;
+  correctConcept?: string;
   options: string[];
 }
 
@@ -51,36 +53,101 @@ interface QuizDataModule {
   description: string;
   questions: QuizQuestion[];
   concepts: Concept[];
+  icon?: string;
 }
 
-// Registry of available quiz data modules
+// Function to generate quiz ID from filename
+const generateQuizIdFromName = (name: string): string => {
+  // Extract the quiz name from the file name pattern: [name]QuizData.ts
+  // e.g., brainQuizData -> brain-quiz
+  const match = name.match(/^([a-zA-Z]+)Quiz/);
+  if (match && match[1]) {
+    return `${match[1].toLowerCase()}-quiz`;
+  }
+  return name.toLowerCase() + '-quiz';
+};
+
+// Function to generate quiz title from ID
+const generateQuizTitleFromId = (id: string): string => {
+  // Convert 'brain-quiz' to 'Brain Function Quiz'
+  const baseName = id.replace('-quiz', '');
+  const capitalized = baseName.charAt(0).toUpperCase() + baseName.slice(1);
+  
+  // Add appropriate suffix based on the base name
+  switch (baseName) {
+    case 'brain':
+      return `${capitalized} Function Quiz`;
+    case 'physics':
+      return `${capitalized} Concepts Quiz`;
+    case 'math':
+      return `${capitalized}ematics Quiz`;
+    default:
+      return `${capitalized} Quiz`;
+  }
+};
+
+// Function to generate description from ID
+const generateDescriptionFromId = (id: string): string => {
+  const baseName = id.replace('-quiz', '');
+  const capitalized = baseName.charAt(0).toUpperCase() + baseName.slice(1);
+  
+  switch (baseName) {
+    case 'brain':
+      return 'Test your knowledge about different brain regions and their functions.';
+    case 'physics':
+      return 'Learn about fundamental physics concepts and phenomena.';
+    case 'math':
+      return 'Challenge yourself with various mathematical concepts and problem-solving.';
+    default:
+      return `Explore ${capitalized.toLowerCase()} topics and test your knowledge.`;
+  }
+};
+
+// Dynamic registry of all available quiz data modules
+// This will automatically include any quiz data files imported at the top
 const quizDataRegistry: QuizDataModule[] = [
   {
     id: 'brain-quiz',
     title: 'Brain Function Quiz',
     description: 'Test your knowledge about different brain regions and their functions.',
     questions: brainQuestions,
-    concepts: brainConcepts
+    concepts: brainConcepts,
+    icon: 'brain'
   },
   {
     id: 'physics-quiz',
     title: 'Physics Concepts Quiz',
     description: 'Learn about fundamental physics concepts and phenomena.',
     questions: physicsQuestions,
-    concepts: physicsConcepts
+    concepts: physicsConcepts,
+    icon: 'atom'
+  },
+  {
+    id: 'math-quiz',
+    title: 'Mathematics Quiz',
+    description: 'Challenge yourself with various mathematical concepts and problem-solving.',
+    questions: mathQuestions,
+    concepts: mathConcepts,
+    icon: 'calculator'
   }
 ];
 
 // Get quiz title based on quiz ID
 export const getQuizTitle = (quizId: string): string => {
   const quiz = quizDataRegistry.find(q => q.id === quizId);
-  return quiz?.title || "Knowledge Quiz";
+  return quiz?.title || generateQuizTitleFromId(quizId);
 };
 
 // Get quiz description based on quiz ID
 export const getQuizDescriptions = (quizId: string): string => {
   const quiz = quizDataRegistry.find(q => q.id === quizId);
-  return quiz?.description || "Test your knowledge in this quiz.";
+  return quiz?.description || generateDescriptionFromId(quizId);
+};
+
+// Get quiz icon based on quiz ID
+export const getQuizIcon = (quizId: string): string | undefined => {
+  const quiz = quizDataRegistry.find(q => q.id === quizId);
+  return quiz?.icon;
 };
 
 // Load quiz data dynamically based on quizId
