@@ -1,4 +1,4 @@
-export interface BrainRegion {
+export interface Concept {
   id: string;
   name: string;
   description: string;
@@ -12,7 +12,7 @@ export interface QuizQuestion {
   options: string[];
 }
 
-export const brainRegions: BrainRegion[] = [
+export const concepts: Concept[] = [
   {
     id: "frontal-lobe",
     name: "Frontal Lobe",
