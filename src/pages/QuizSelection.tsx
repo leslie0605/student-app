@@ -1,9 +1,8 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Brain, ArrowLeft, BookOpen, Atom, PieChart, Calculator } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { getQuizTitle, getQuizDescriptions, isQuizCompleted } from '@/utils/quizUtils';
+import { getQuizTitle, getQuizDescriptions, isQuizCompleted, getAvailableQuizIds } from '@/utils/quizUtils';
 
 // Interface for quiz data
 interface QuizData {
@@ -16,36 +15,37 @@ interface QuizData {
 
 const QuizSelection = () => {
   const navigate = useNavigate();
+  const availableQuizIds = getAvailableQuizIds();
   
-  // Quiz data with different categories
-  const quizzes: QuizData[] = [
+  // Define all possible quizzes
+  const allQuizzes: QuizData[] = [
     {
       id: 'brain-quiz',
       title: getQuizTitle('brain-quiz'),
       description: getQuizDescriptions('brain-quiz'),
       icon: <Brain className="h-8 w-8 text-magic-purple" />,
-      available: true
+      available: availableQuizIds.includes('brain-quiz')
+    },
+    {
+      id: 'physics-quiz',
+      title: getQuizTitle('physics-quiz'),
+      description: getQuizDescriptions('physics-quiz'),
+      icon: <Atom className="h-8 w-8 text-magic-blue" />,
+      available: availableQuizIds.includes('physics-quiz')
     },
     {
       id: 'psychology-quiz',
       title: getQuizTitle('psychology-quiz'),
       description: getQuizDescriptions('psychology-quiz'),
       icon: <PieChart className="h-8 w-8 text-magic-pink" />,
-      available: false
-    },
-    {
-      id: 'science-quiz',
-      title: getQuizTitle('science-quiz'),
-      description: getQuizDescriptions('science-quiz'),
-      icon: <Atom className="h-8 w-8 text-magic-blue" />,
-      available: false
+      available: availableQuizIds.includes('psychology-quiz')
     },
     {
       id: 'math-quiz',
       title: getQuizTitle('math-quiz'),
       description: getQuizDescriptions('math-quiz'),
       icon: <Calculator className="h-8 w-8 text-emerald-500" />,
-      available: false
+      available: availableQuizIds.includes('math-quiz')
     }
   ];
 
@@ -79,7 +79,7 @@ const QuizSelection = () => {
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-          {quizzes.map((quiz) => {
+          {allQuizzes.map((quiz) => {
             const completed = isQuizCompleted(quiz.id);
             
             return (
