@@ -1,7 +1,5 @@
-
 import React from 'react';
-import { UserQuizAnswer } from '@/utils/quizUtils';
-import { loadQuizData } from '@/utils/quizUtils';
+import { UserQuizAnswer, loadQuizData } from '@/utils/quizUtils';
 import { CheckCircle, XCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useParams } from 'react-router-dom';

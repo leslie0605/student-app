@@ -1,13 +1,13 @@
 
 import React from 'react';
 import { cn } from '@/lib/utils';
-import { BrainRegion } from '@/data/brainQuizData';
+import { Concept } from '@/utils/quizUtils';
 import { CheckCircle, XCircle } from 'lucide-react';
 
 interface QuizFeedbackProps {
   isCorrect: boolean;
-  selectedRegion: BrainRegion | null;
-  correctRegion: BrainRegion;
+  selectedRegion: Concept | null;
+  correctRegion: Concept;
   explanation: string;
   onNext: () => void;
 }

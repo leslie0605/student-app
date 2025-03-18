@@ -1,11 +1,11 @@
 
 import React from 'react';
 import { cn } from '@/lib/utils';
-import { BrainRegion } from '@/data/brainQuizData';
+import { Concept } from '@/utils/quizUtils';
 import { Button } from '@/components/ui/button';
 
 interface BrainDiagramProps {
-  regions: BrainRegion[];
+  regions: Concept[];
   selectedRegion: string | null;
   correctRegion: string | null;
   onRegionClick: (regionId: string) => void;
