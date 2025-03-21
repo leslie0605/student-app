@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
@@ -153,125 +152,124 @@ const SopPage = () => {
           </h1>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          <div className="lg:col-span-9">
-            {/* Revision Notifications */}
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold">Mentor Revisions</h2>
-              <Button 
-                onClick={handleRefreshRevisions}
-                disabled={isCheckingRevisions}
-                variant="outline"
-              >
-                {isCheckingRevisions ? "Checking..." : "Check for Revisions"}
-              </Button>
-            </div>
-            
-            {revisionNotifications.length > 0 ? (
-              <Card className="border border-magic-blue/10 shadow-sm mb-8">
-                <CardContent className="p-6">
-                  <h3 className="text-xl font-semibold mb-6 flex items-center">
-                    <Mail className="h-5 w-5 mr-2 text-primary" />
-                    Revision Notifications
-                  </h3>
-                  <div className="space-y-4">
-                    {revisionNotifications.map((notification) => (
-                      <div 
-                        key={notification.id} 
-                        className={`border rounded-lg p-4 relative transition-all ${
-                          notification.isRead ? 'border-gray-200' : 'border-primary shadow-md'
-                        }`}
-                      >
-                        {!notification.isRead && (
-                          <div className="absolute top-4 right-4 h-3 w-3 rounded-full bg-primary animate-pulse" />
-                        )}
-                        <div className="flex items-start gap-3">
-                          <div className="p-2 rounded-full bg-primary/10">
-                            <UserCheck className="h-6 w-6 text-primary" />
+        <div className="grid grid-cols-1 gap-8">
+          {/* Revision Notifications */}
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-bold">Mentor Revisions</h2>
+            <Button 
+              onClick={handleRefreshRevisions}
+              disabled={isCheckingRevisions}
+              variant="outline"
+            >
+              {isCheckingRevisions ? "Checking..." : "Check for Revisions"}
+            </Button>
+          </div>
+          
+          {revisionNotifications.length > 0 ? (
+            <Card className="border border-magic-blue/10 shadow-sm mb-8">
+              <CardContent className="p-6">
+                <h3 className="text-xl font-semibold mb-6 flex items-center">
+                  <Mail className="h-5 w-5 mr-2 text-primary" />
+                  Revision Notifications
+                </h3>
+                <div className="space-y-4">
+                  {revisionNotifications.map((notification) => (
+                    <div 
+                      key={notification.id} 
+                      className={`border rounded-lg p-4 relative transition-all ${
+                        notification.isRead ? 'border-gray-200' : 'border-primary shadow-md'
+                      }`}
+                    >
+                      {!notification.isRead && (
+                        <div className="absolute top-4 right-4 h-3 w-3 rounded-full bg-primary animate-pulse" />
+                      )}
+                      <div className="flex items-start gap-3">
+                        <div className="p-2 rounded-full bg-primary/10">
+                          <UserCheck className="h-6 w-6 text-primary" />
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="font-medium">
+                            {notification.mentorName} revised your {notification.documentName}
+                          </h4>
+                          <div className="text-sm text-muted-foreground mt-1">
+                            <div className="flex items-center gap-4">
+                              <span className="flex items-center">
+                                <Edit className="h-4 w-4 mr-1" />
+                                {notification.editsAccepted} edits accepted
+                              </span>
+                              <span className="flex items-center">
+                                <MessageSquare className="h-4 w-4 mr-1" />
+                                {notification.commentsAdded} comments added
+                              </span>
+                            </div>
+                            <div className="mt-1">
+                              Received on {notification.date}
+                            </div>
                           </div>
-                          <div className="flex-1">
-                            <h4 className="font-medium">
-                              {notification.mentorName} revised your {notification.documentName}
-                            </h4>
-                            <div className="text-sm text-muted-foreground mt-1">
-                              <div className="flex items-center gap-4">
-                                <span className="flex items-center">
-                                  <Edit className="h-4 w-4 mr-1" />
-                                  {notification.editsAccepted} edits accepted
-                                </span>
-                                <span className="flex items-center">
-                                  <MessageSquare className="h-4 w-4 mr-1" />
-                                  {notification.commentsAdded} comments added
-                                </span>
-                              </div>
-                              <div className="mt-1">
-                                Received on {notification.date}
-                              </div>
-                            </div>
-                            <div className="flex gap-2 mt-3">
-                              <Button size="sm" onClick={() => viewRevision(notification.id)}>
-                                View Revisions
+                          <div className="flex gap-2 mt-3">
+                            <Button size="sm" onClick={() => viewRevision(notification.id)}>
+                              View Revisions
+                            </Button>
+                            {!notification.isRead && (
+                              <Button 
+                                size="sm" 
+                                variant="outline" 
+                                onClick={() => markNotificationAsRead(notification.id)}
+                              >
+                                Mark as Read
                               </Button>
-                              {!notification.isRead && (
-                                <Button 
-                                  size="sm" 
-                                  variant="outline" 
-                                  onClick={() => markNotificationAsRead(notification.id)}
-                                >
-                                  Mark as Read
-                                </Button>
-                              )}
-                            </div>
+                            )}
                           </div>
                         </div>
                       </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            ) : (
-              <Card className="border border-magic-blue/10 shadow-sm mb-8">
-                <CardContent className="p-6 text-center">
-                  <Mail className="h-12 w-12 mx-auto text-muted-foreground opacity-20 mb-4" />
-                  <h3 className="text-xl font-semibold mb-2">No Revisions Yet</h3>
-                  <p className="text-muted-foreground mb-4">
-                    You haven't received any document revisions from mentors yet.
-                  </p>
-                  <Button onClick={handleRefreshRevisions} disabled={isCheckingRevisions}>
-                    {isCheckingRevisions ? "Checking..." : "Check for Revisions"}
-                  </Button>
-                </CardContent>
-              </Card>
-            )}
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-              <Card className="border border-magic-blue/10 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
-                <CardContent className="p-6 flex flex-col items-center justify-center min-h-[200px]">
-                  <Upload className="h-12 w-12 text-primary mb-4" />
-                  <h3 className="text-xl font-medium mb-2">Upload SoP</h3>
-                  <p className="text-sm text-center text-muted-foreground">
-                    Upload your current statement of purpose (PDF/DOCX)
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card className="border border-magic-blue/10 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
-                <CardContent className="p-6 flex flex-col items-center justify-center min-h-[200px]">
-                  <FileCheck className="h-12 w-12 text-primary mb-4" />
-                  <h3 className="text-xl font-medium mb-2">Auto-Format</h3>
-                  <p className="text-sm text-center text-muted-foreground">
-                    Auto-tailor your SoP to specific program requirements
-                  </p>
-                </CardContent>
-              </Card>
-            </div>
-
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          ) : (
             <Card className="border border-magic-blue/10 shadow-sm mb-8">
-              <CardContent className="p-6">
-                <h3 className="text-xl font-semibold mb-6">
-                  Your SoP Versions
-                </h3>
-                {isLoadingSoP ? (
+              <CardContent className="p-6 text-center">
+                <Mail className="h-12 w-12 mx-auto text-muted-foreground opacity-20 mb-4" />
+                <h3 className="text-xl font-semibold mb-2">No Revisions Yet</h3>
+                <p className="text-muted-foreground mb-4">
+                  You haven't received any document revisions from mentors yet.
+                </p>
+                <Button onClick={handleRefreshRevisions} disabled={isCheckingRevisions}>
+                  {isCheckingRevisions ? "Checking..." : "Check for Revisions"}
+                </Button>
+              </CardContent>
+            </Card>
+          )}
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <Card className="border border-magic-blue/10 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+              <CardContent className="p-6 flex flex-col items-center justify-center min-h-[200px]">
+                <Upload className="h-12 w-12 text-primary mb-4" />
+                <h3 className="text-xl font-medium mb-2">Upload SoP</h3>
+                <p className="text-sm text-center text-muted-foreground">
+                  Upload your current statement of purpose (PDF/DOCX)
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="border border-magic-blue/10 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+              <CardContent className="p-6 flex flex-col items-center justify-center min-h-[200px]">
+                <FileCheck className="h-12 w-12 text-primary mb-4" />
+                <h3 className="text-xl font-medium mb-2">Auto-Format</h3>
+                <p className="text-sm text-center text-muted-foreground">
+                  Auto-tailor your SoP to specific program requirements
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+
+          <Card className="border border-magic-blue/10 shadow-sm mb-8">
+            <CardContent className="p-6">
+              <h3 className="text-xl font-semibold mb-6">
+                Your SoP Versions
+              </h3>
+              {isLoadingSoP ? (
                   <div className="space-y-4">
                     {[1, 2].map((i) => (
                       <div
@@ -341,42 +339,8 @@ const SopPage = () => {
                     ))}
                   </div>
                 )}
-              </CardContent>
-            </Card>
-          </div>
-
-          <div className="lg:col-span-3">
-            <div className="space-y-6 sticky top-24">
-              <Card className="border border-magic-blue/10 shadow-sm">
-                <CardContent className="p-6">
-                  <h3 className="text-xl font-semibold mb-4">SoP Tips</h3>
-                  <ul className="text-sm space-y-2 list-disc pl-4">
-                    <li>Be specific about research interests and goals</li>
-                    <li>Mention relevant faculty members by name</li>
-                    <li>Connect past experiences to future plans</li>
-                    <li>Explain why this specific program is a good fit</li>
-                    <li>
-                      Keep within the program's page limits (usually 1-2 pages)
-                    </li>
-                  </ul>
-                </CardContent>
-              </Card>
-              
-              <Card className="border border-magic-blue/10 shadow-sm">
-                <CardContent className="p-6">
-                  <h3 className="text-xl font-semibold mb-4">Document Sharing</h3>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Share your SoP with PhD mentors for professional review and personalized feedback.
-                  </p>
-                  <ul className="text-sm space-y-2 list-disc pl-4 mb-4">
-                    <li>Get expert feedback on your SoP</li>
-                    <li>Receive detailed comments and edits</li>
-                    <li>Improve your chances of acceptance</li>
-                  </ul>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
       <MentorChatButton />
