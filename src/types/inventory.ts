@@ -1,4 +1,3 @@
-
 // Tool categories and their statuses
 export type ToolCategory = 'lor' | 'cv' | 'sop' | 'phs' | 'language' | 'gpa';
 export type ToolStatus = 'not-started' | 'in-progress' | 'completed';
@@ -52,6 +51,22 @@ export interface SoPVersion {
   fileUrl?: string;
   score?: number;
   feedback?: string[];
+  sentToMentor?: boolean;
+  mentorId?: string;
+  lastSentDate?: string;
+}
+
+// Revision notification type for mentor feedback
+export interface RevisionNotification {
+  id: string;
+  documentId: string;
+  documentName: string;
+  mentorName: string;
+  date: string;
+  editsAccepted: number;
+  commentsAdded: number;
+  isRead: boolean;
+  fileUrl?: string;
 }
 
 // Personal History Statement types

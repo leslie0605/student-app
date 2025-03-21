@@ -126,22 +126,23 @@ const mockCVVersions: CVVersion[] = [
   }
 ];
 
-// Mock SoP versions
+// Update SoP versions to include sent to mentor information
 const mockSoPVersions: SoPVersion[] = [
   {
-    id: '1',
-    name: 'UCLA Psychology',
-    targetUniversity: 'UCLA',
-    targetProgram: 'Psychology PhD',
-    dateCreated: '2023-09-10',
-    dateModified: '2023-10-15',
-    fileUrl: '/placeholder.svg',
+    id: "1",
+    name: "UCLA Psychology",
+    targetUniversity: "UCLA",
+    targetProgram: "Psychology PhD",
+    dateCreated: "2023-09-10",
+    dateModified: "2023-10-15",
+    fileUrl: "/placeholder.svg",
     score: 68,
     feedback: [
-      'More specific about research interests',
-      'Connect past experience to future goals better',
-      'Mention potential faculty collaborators'
-    ]
+      "More specific about research interests",
+      "Connect past experience to future goals better",
+      "Mention potential faculty collaborators"
+    ],
+    sentToMentor: false
   }
 ];
 
@@ -495,5 +496,26 @@ export const checkWESRequirement = async (
         });
       }
     }, 800);
+  });
+};
+
+// Function to update a SoP version's "sent to mentor" status
+export const updateSoPSentToMentor = async (
+  id: string,
+  status: boolean,
+  mentorId?: string
+): Promise<SoPVersion> => {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      const sopIndex = mockSoPVersions.findIndex(s => s.id === id);
+      if (sopIndex >= 0) {
+        mockSoPVersions[sopIndex].sentToMentor = status;
+        mockSoPVersions[sopIndex].mentorId = mentorId;
+        mockSoPVersions[sopIndex].lastSentDate = new Date().toISOString().split('T')[0];
+        resolve(mockSoPVersions[sopIndex]);
+      } else {
+        reject(new Error('SoP version not found'));
+      }
+    }, 500);
   });
 };

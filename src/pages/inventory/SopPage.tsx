@@ -7,24 +7,17 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ChevronLeft, Upload, FileText, FileCheck, Edit, MessageSquare, UserCheck, Mail } from "lucide-react";
 import { fetchSoPVersions } from "@/services/inventoryService";
-import { SoPVersion } from "@/types/inventory";
+import { SoPVersion, RevisionNotification } from "@/types/inventory";
 import MentorChatButton from "@/components/mentor/MentorChatButton";
-import { toast } from "@/components/ui/use-toast";
-
-interface RevisionNotification {
-  id: string;
-  documentName: string;
-  mentorName: string;
-  date: string;
-  editsAccepted: number;
-  commentsAdded: number;
-  isRead: boolean;
-}
+import { toast } from "@/hooks/use-toast";
+import SendToMentorDialog from "@/components/inventory/sop/SendToMentorDialog";
+import { checkForDocumentRevisions, markRevisionAsRead } from "@/services/documentSharingService";
 
 const SopPage = () => {
   const navigate = useNavigate();
   const [sopVersions, setSopVersions] = useState<SoPVersion[]>([]);
   const [revisionNotifications, setRevisionNotifications] = useState<RevisionNotification[]>([]);
+  const [isCheckingRevisions, setIsCheckingRevisions] = useState(false);
 
   // Fetch SoP versions
   const { isLoading: isLoadingSoP, data: sopData } = useQuery({
@@ -39,57 +32,107 @@ const SopPage = () => {
     }
   }, [sopData]);
 
-  // Mock revision notifications data
-  useEffect(() => {
-    // This would normally come from an API call
-    const mockNotifications: RevisionNotification[] = [
-      {
-        id: "1",
-        documentName: "UCLA Psychology SoP",
-        mentorName: "Dr. Jane Smith",
-        date: "2023-11-05",
-        editsAccepted: 12,
-        commentsAdded: 3,
+  // Fetch revision notifications
+  const fetchRevisionNotifications = async () => {
+    setIsCheckingRevisions(true);
+    try {
+      const revisions = await checkForDocumentRevisions();
+      
+      // Convert the revisions to notification format
+      const notifications: RevisionNotification[] = revisions.map(revision => ({
+        id: revision.id,
+        documentId: revision.documentId,
+        documentName: revision.documentName,
+        mentorName: revision.mentorName,
+        date: new Date(revision.revisionDate).toISOString().split('T')[0],
+        editsAccepted: revision.editsAccepted,
+        commentsAdded: revision.commentsAdded,
         isRead: false,
-      },
-      {
-        id: "2",
-        documentName: "Stanford Computer Science SoP",
-        mentorName: "Prof. Michael Chen",
-        date: "2023-11-02",
-        editsAccepted: 8,
-        commentsAdded: 5,
-        isRead: true,
-      },
-    ];
+        fileUrl: revision.fileUrl
+      }));
+      
+      setRevisionNotifications(prevNotifications => {
+        // Merge new notifications with existing ones, avoiding duplicates
+        const existingIds = new Set(prevNotifications.map(n => n.id));
+        const newNotifications = notifications.filter(n => !existingIds.has(n.id));
+        return [...prevNotifications, ...newNotifications];
+      });
+    } catch (error) {
+      console.error("Error fetching revision notifications:", error);
+    } finally {
+      setIsCheckingRevisions(false);
+    }
+  };
+
+  // Fetch revision notifications when the component mounts
+  useEffect(() => {
+    fetchRevisionNotifications();
     
-    setRevisionNotifications(mockNotifications);
+    // Set up polling for new revisions every 5 minutes
+    const interval = setInterval(fetchRevisionNotifications, 5 * 60 * 1000);
+    
+    return () => clearInterval(interval);
   }, []);
 
-  const markNotificationAsRead = (notificationId: string) => {
-    setRevisionNotifications(prevNotifications => 
-      prevNotifications.map(notification => 
-        notification.id === notificationId 
-          ? { ...notification, isRead: true } 
-          : notification
-      )
-    );
-    
-    toast({
-      title: "Notification marked as read",
-      description: "You've marked this revision notification as read."
-    });
+  const markNotificationAsRead = async (notificationId: string) => {
+    try {
+      const result = await markRevisionAsRead(notificationId);
+      
+      if (result.success) {
+        setRevisionNotifications(prevNotifications => 
+          prevNotifications.map(notification => 
+            notification.id === notificationId 
+              ? { ...notification, isRead: true } 
+              : notification
+          )
+        );
+        
+        toast({
+          title: "Notification marked as read",
+          description: "You've marked this revision notification as read."
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: "Failed to mark notification as read.",
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "An error occurred while updating the notification.",
+        variant: "destructive"
+      });
+    }
   };
 
   const viewRevision = (notificationId: string) => {
     // Mark as read when viewed
     markNotificationAsRead(notificationId);
     
-    // In a real app, this would navigate to the revision view
-    toast({
-      title: "View revision",
-      description: "This would open the document with revisions."
-    });
+    // Find the notification to get the document URL
+    const notification = revisionNotifications.find(n => n.id === notificationId);
+    
+    if (notification?.fileUrl) {
+      // In a real app, this would download or open the document
+      window.open(notification.fileUrl, '_blank');
+    } else {
+      toast({
+        title: "View revision",
+        description: "This would open the document with revisions."
+      });
+    }
+  };
+
+  const handleRefreshRevisions = () => {
+    if (!isCheckingRevisions) {
+      fetchRevisionNotifications();
+      toast({
+        title: "Checking for revisions",
+        description: "Looking for new document revisions from mentors."
+      });
+    }
   };
 
   return (
@@ -113,7 +156,18 @@ const SopPage = () => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           <div className="lg:col-span-9">
             {/* Revision Notifications */}
-            {revisionNotifications.length > 0 && (
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold">Mentor Revisions</h2>
+              <Button 
+                onClick={handleRefreshRevisions}
+                disabled={isCheckingRevisions}
+                variant="outline"
+              >
+                {isCheckingRevisions ? "Checking..." : "Check for Revisions"}
+              </Button>
+            </div>
+            
+            {revisionNotifications.length > 0 ? (
               <Card className="border border-magic-blue/10 shadow-sm mb-8">
                 <CardContent className="p-6">
                   <h3 className="text-xl font-semibold mb-6 flex items-center">
@@ -173,6 +227,19 @@ const SopPage = () => {
                       </div>
                     ))}
                   </div>
+                </CardContent>
+              </Card>
+            ) : (
+              <Card className="border border-magic-blue/10 shadow-sm mb-8">
+                <CardContent className="p-6 text-center">
+                  <Mail className="h-12 w-12 mx-auto text-muted-foreground opacity-20 mb-4" />
+                  <h3 className="text-xl font-semibold mb-2">No Revisions Yet</h3>
+                  <p className="text-muted-foreground mb-4">
+                    You haven't received any document revisions from mentors yet.
+                  </p>
+                  <Button onClick={handleRefreshRevisions} disabled={isCheckingRevisions}>
+                    {isCheckingRevisions ? "Checking..." : "Check for Revisions"}
+                  </Button>
                 </CardContent>
               </Card>
             )}
@@ -268,7 +335,7 @@ const SopPage = () => {
                           <Button size="sm" variant="outline">
                             Edit
                           </Button>
-                          <Button size="sm">View Report</Button>
+                          <SendToMentorDialog document={version} />
                         </div>
                       </div>
                     ))}
@@ -291,6 +358,20 @@ const SopPage = () => {
                     <li>
                       Keep within the program's page limits (usually 1-2 pages)
                     </li>
+                  </ul>
+                </CardContent>
+              </Card>
+              
+              <Card className="border border-magic-blue/10 shadow-sm">
+                <CardContent className="p-6">
+                  <h3 className="text-xl font-semibold mb-4">Document Sharing</h3>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Share your SoP with PhD mentors for professional review and personalized feedback.
+                  </p>
+                  <ul className="text-sm space-y-2 list-disc pl-4 mb-4">
+                    <li>Get expert feedback on your SoP</li>
+                    <li>Receive detailed comments and edits</li>
+                    <li>Improve your chances of acceptance</li>
                   </ul>
                 </CardContent>
               </Card>
