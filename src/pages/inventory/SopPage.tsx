@@ -1,17 +1,30 @@
+
 import React, { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import MainNavbar from "@/components/MainNavbar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ChevronLeft, Upload, FileText, FileCheck } from "lucide-react";
+import { ChevronLeft, Upload, FileText, FileCheck, Edit, MessageSquare, UserCheck, Mail } from "lucide-react";
 import { fetchSoPVersions } from "@/services/inventoryService";
 import { SoPVersion } from "@/types/inventory";
 import MentorChatButton from "@/components/mentor/MentorChatButton";
+import { toast } from "@/components/ui/use-toast";
+
+interface RevisionNotification {
+  id: string;
+  documentName: string;
+  mentorName: string;
+  date: string;
+  editsAccepted: number;
+  commentsAdded: number;
+  isRead: boolean;
+}
 
 const SopPage = () => {
   const navigate = useNavigate();
   const [sopVersions, setSopVersions] = useState<SoPVersion[]>([]);
+  const [revisionNotifications, setRevisionNotifications] = useState<RevisionNotification[]>([]);
 
   // Fetch SoP versions
   const { isLoading: isLoadingSoP, data: sopData } = useQuery({
@@ -25,6 +38,59 @@ const SopPage = () => {
       setSopVersions(sopData);
     }
   }, [sopData]);
+
+  // Mock revision notifications data
+  useEffect(() => {
+    // This would normally come from an API call
+    const mockNotifications: RevisionNotification[] = [
+      {
+        id: "1",
+        documentName: "UCLA Psychology SoP",
+        mentorName: "Dr. Jane Smith",
+        date: "2023-11-05",
+        editsAccepted: 12,
+        commentsAdded: 3,
+        isRead: false,
+      },
+      {
+        id: "2",
+        documentName: "Stanford Computer Science SoP",
+        mentorName: "Prof. Michael Chen",
+        date: "2023-11-02",
+        editsAccepted: 8,
+        commentsAdded: 5,
+        isRead: true,
+      },
+    ];
+    
+    setRevisionNotifications(mockNotifications);
+  }, []);
+
+  const markNotificationAsRead = (notificationId: string) => {
+    setRevisionNotifications(prevNotifications => 
+      prevNotifications.map(notification => 
+        notification.id === notificationId 
+          ? { ...notification, isRead: true } 
+          : notification
+      )
+    );
+    
+    toast({
+      title: "Notification marked as read",
+      description: "You've marked this revision notification as read."
+    });
+  };
+
+  const viewRevision = (notificationId: string) => {
+    // Mark as read when viewed
+    markNotificationAsRead(notificationId);
+    
+    // In a real app, this would navigate to the revision view
+    toast({
+      title: "View revision",
+      description: "This would open the document with revisions."
+    });
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-magic-light to-white">
@@ -46,6 +112,71 @@ const SopPage = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           <div className="lg:col-span-9">
+            {/* Revision Notifications */}
+            {revisionNotifications.length > 0 && (
+              <Card className="border border-magic-blue/10 shadow-sm mb-8">
+                <CardContent className="p-6">
+                  <h3 className="text-xl font-semibold mb-6 flex items-center">
+                    <Mail className="h-5 w-5 mr-2 text-primary" />
+                    Revision Notifications
+                  </h3>
+                  <div className="space-y-4">
+                    {revisionNotifications.map((notification) => (
+                      <div 
+                        key={notification.id} 
+                        className={`border rounded-lg p-4 relative transition-all ${
+                          notification.isRead ? 'border-gray-200' : 'border-primary shadow-md'
+                        }`}
+                      >
+                        {!notification.isRead && (
+                          <div className="absolute top-4 right-4 h-3 w-3 rounded-full bg-primary animate-pulse" />
+                        )}
+                        <div className="flex items-start gap-3">
+                          <div className="p-2 rounded-full bg-primary/10">
+                            <UserCheck className="h-6 w-6 text-primary" />
+                          </div>
+                          <div className="flex-1">
+                            <h4 className="font-medium">
+                              {notification.mentorName} revised your {notification.documentName}
+                            </h4>
+                            <div className="text-sm text-muted-foreground mt-1">
+                              <div className="flex items-center gap-4">
+                                <span className="flex items-center">
+                                  <Edit className="h-4 w-4 mr-1" />
+                                  {notification.editsAccepted} edits accepted
+                                </span>
+                                <span className="flex items-center">
+                                  <MessageSquare className="h-4 w-4 mr-1" />
+                                  {notification.commentsAdded} comments added
+                                </span>
+                              </div>
+                              <div className="mt-1">
+                                Received on {notification.date}
+                              </div>
+                            </div>
+                            <div className="flex gap-2 mt-3">
+                              <Button size="sm" onClick={() => viewRevision(notification.id)}>
+                                View Revisions
+                              </Button>
+                              {!notification.isRead && (
+                                <Button 
+                                  size="sm" 
+                                  variant="outline" 
+                                  onClick={() => markNotificationAsRead(notification.id)}
+                                >
+                                  Mark as Read
+                                </Button>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
               <Card className="border border-magic-blue/10 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
                 <CardContent className="p-6 flex flex-col items-center justify-center min-h-[200px]">
