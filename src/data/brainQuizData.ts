@@ -15,7 +15,8 @@ export interface QuizQuestion {
 export const quizMetadata = {
   id: "brain-quiz",
   title: "Brain Regions Quiz",
-  description: "Test your knowledge about different brain regions and their functions.",
+  description:
+    "Test your knowledge about different brain regions and their functions.",
   icon: "brain",
   image: "/lovable-uploads/22d2e7af-4b10-4247-b980-a365152c6ff1.png",
 };
@@ -69,17 +70,23 @@ export const concepts: Concept[] = [
     description:
       "Crucial for forming new memories, learning, and spatial navigation.",
   },
+  {
+    id: "amygdala",
+    name: "Amygdala",
+    description:
+      "Involved in processing emotions, particularly fear, and triggering the fight-or-flight response.",
+  },
 ];
 
 export const quizQuestions: QuizQuestion[] = [
   {
     id: 1,
     question:
-      "Why do people with frontal lobe damage often struggle with planning and decision-making?",
+      "Why do people sometimes overreact to small things, even when they don't understand why?",
     explanation:
-      "The frontal lobe is responsible for executive functions like planning, decision-making, and impulse control. Damage to this area affects these critical abilities.",
-    correctConcept: "frontal-lobe",
-    options: ["frontal-lobe", "temporal-lobe", "cerebellum", "brain-stem"],
+      "The amygdala is your brain's alarm system, constantly scanning for threats. When it detects something potentially threatening (even if it's actually harmless), it can trigger strong emotional responses before your conscious mind has time to evaluate the situation rationally. This is why you might find yourself overreacting before you've had time to think.",
+    correctConcept: "amygdala",
+    options: ["amygdala", "temporal-lobe", "cerebellum", "brain-stem"],
   },
   {
     id: 2,
@@ -116,32 +123,5 @@ export const quizQuestions: QuizQuestion[] = [
       "The brain stem controls vital functions like breathing, heart rate, and consciousness. Damage to this region can disrupt these essential life-sustaining processes.",
     correctConcept: "brain-stem",
     options: ["brain-stem", "hippocampus", "frontal-lobe", "parietal-lobe"],
-  },
-  {
-    id: 6,
-    question:
-      "Why might damage to the hippocampus prevent someone from forming new memories?",
-    explanation:
-      "The hippocampus is crucial for converting short-term memories into long-term memories. Damage to this structure causes anterograde amnesia, where new memories cannot be formed.",
-    correctConcept: "hippocampus",
-    options: ["hippocampus", "occipital-lobe", "cerebellum", "hypothalamus"],
-  },
-  {
-    id: 7,
-    question:
-      "Why would a tumor in the hypothalamus disrupt body temperature regulation?",
-    explanation:
-      "The hypothalamus regulates homeostasis, including body temperature. A tumor in this region can impair its ability to maintain normal body temperature.",
-    correctConcept: "hypothalamus",
-    options: ["hypothalamus", "temporal-lobe", "brain-stem", "frontal-lobe"],
-  },
-  {
-    id: 8,
-    question:
-      "Why might damage to the parietal lobe cause someone to neglect one side of their body?",
-    explanation:
-      "The parietal lobe processes sensory information and spatial awareness. Damage, particularly to the right parietal lobe, can cause hemispatial neglect where a person ignores or is unaware of the left side of their body or environment.",
-    correctConcept: "parietal-lobe",
-    options: ["parietal-lobe", "occipital-lobe", "hippocampus", "cerebellum"],
   },
 ];

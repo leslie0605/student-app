@@ -160,8 +160,8 @@ export const loadQuizData = (quizId: string) => {
       title: quiz.title,
       description: quiz.description,
       icon: quiz.icon,
-      image: quiz.image
-    }
+      image: quiz.image,
+    },
   };
 };
 

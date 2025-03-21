@@ -1,4 +1,3 @@
-
 export interface Concept {
   id: string;
   name: string;
@@ -15,88 +14,88 @@ export interface QuizQuestion {
 
 export const quizMetadata = {
   id: "music-quiz",
-  title: "Quiz on Music Concepts",
+  title: "Quiz on music Concepts",
   description: "Test your knowledge about music concepts.",
   icon: "music",
-  image: "https://images.unsplash.com/photo-1507838153414-b4b713384a76?auto=format&fit=crop&w=800&q=80",
+  image: "https://images.unsplash.com/photo-1519681393784-d120267933ba",
 };
 
 export const concepts: Concept[] = [
   {
     id: "concept-1",
-    name: "Classical Music",
+    name: "Musical Notation",
     description:
-      "Classical music is a broad term that usually refers to the music produced in, or rooted in the traditions of Western liturgical and secular music, encompassing a broad period from roughly the 9th century to present times.",
+      "A system used to visually represent aurally perceived music played with instruments or sung by the human voice through the use of written symbols.",
   },
   {
     id: "concept-2",
-    name: "Jazz Music",
+    name: "Rhythm",
     description:
-      "Jazz is a music genre that originated in the African-American communities of New Orleans, United States in the late 19th and early 20th centuries. It emerged in the form of independent traditional and popular musical styles.",
+      "The arrangement of sounds as they move through time. It's the pattern of durations of notes and rests.",
   },
   {
     id: "concept-3",
-    name: "Rock Music",
+    name: "Melody",
     description:
-      "Rock music is a broad genre of popular music that originated as 'rock and roll' in the United States in the late 1940s and early 1950s, evolving into a range of different styles in the mid-1960s and later, particularly in the United States and the United Kingdom.",
+      "A sequence of single notes that is musically satisfying. It's the tune you whistle or hum.",
   },
   {
     id: "concept-4",
-    name: "Pop Music",
+    name: "Harmony",
     description:
-      "Pop music is a genre of popular music that originated in its modern form during the mid-1950s in the United States and the United Kingdom. The terms 'popular music' and 'pop music' are often used interchangeably, although the former describes all music that is popular and includes many disparate styles.",
+      "The process by which individual sounds are joined together. It's the simultaneous combination of notes and the structure of these combinations.",
   },
   {
     id: "concept-5",
-    name: "Hip Hop Music",
+    name: "Tempo",
     description:
-      "Hip hop music, also known as rap music, is a genre of popular music developed in the United States by inner-city African Americans and Latino Americans in the Bronx borough of New York City in the 1970s. It consists of a stylized rhythmic music that commonly accompanies rapping, a rhythmic and rhyming speech that is chanted.",
+      "The speed or pace of a given piece of music. It can be slow, fast or anything in between.",
   },
 ];
 export const quizQuestions: QuizQuestion[] = [
   {
     id: 1,
     question:
-      "Which genre of music originated in New Orleans, United States in the late 19th and early 20th centuries?",
+      "Which concept refers to the visual representation of music through written symbols?",
     explanation:
-      "Jazz music originated in the African-American communities of New Orleans, United States in the late 19th and early 20th centuries.",
-    correctConcept: "concept-2",
+      "Musical Notation is the system used to visually represent aurally perceived music played with instruments or sung by the human voice.",
+    correctConcept: "concept-1",
     options: ["concept-1", "concept-2", "concept-3", "concept-4"],
   },
   {
     id: 2,
     question:
-      "What genre of music is associated with the Bronx borough of New York City in the 1970s?",
+      "Which concept describes the arrangement of sounds as they move through time?",
     explanation:
-      "Hip Hop music, also known as rap music, developed in the United States by inner-city African Americans and Latino Americans in the Bronx borough of New York City in the 1970s.",
-    correctConcept: "concept-5",
-    options: ["concept-1", "concept-2", "concept-3", "concept-5"],
+      "Rhythm refers to the pattern of durations of notes and rests as they move through time.",
+    correctConcept: "concept-2",
+    options: ["concept-1", "concept-2", "concept-3", "concept-4"],
   },
   {
     id: 3,
     question:
-      "Which genre of music evolved as 'rock and roll' in the United States in the late 1940s and early 1950s?",
+      "Which concept is defined as a sequence of single notes that is musically satisfying?",
     explanation:
-      "Rock music is a genre of popular music that originated as 'rock and roll' in the United States in the late 1940s and early 1950s.",
+      "Melody is the sequence of single notes that is musically satisfying. It's the tune you whistle or hum.",
     correctConcept: "concept-3",
-    options: ["concept-4", "concept-2", "concept-3", "concept-1"],
+    options: ["concept-1", "concept-2", "concept-3", "concept-5"],
   },
   {
     id: 4,
     question:
-      "Which genre of music originated in its modern form during the mid-1950s in the United States and the United Kingdom?",
+      "Which concept refers to the simultaneous combination of notes and the structure of these combinations?",
     explanation:
-      "Pop music is a genre of popular music that originated in its modern form during the mid-1950s in the United States and the United Kingdom.",
+      "Harmony refers to the process by which individual sounds are joined together. It's the simultaneous combination of notes and the structure of these combinations.",
     correctConcept: "concept-4",
-    options: ["concept-4", "concept-5", "concept-3", "concept-1"],
+    options: ["concept-2", "concept-3", "concept-4", "concept-5"],
   },
   {
     id: 5,
     question:
-      "Which genre of music usually refers to the music produced in, or rooted in the traditions of Western liturgical and secular music?",
+      "Which concept describes the speed or pace of a given piece of music?",
     explanation:
-      "Classical music usually refers to the music produced in, or rooted in the traditions of Western liturgical and secular music.",
-    correctConcept: "concept-1",
-    options: ["concept-3", "concept-2", "concept-5", "concept-1"],
+      "Tempo is the speed or pace of a given piece of music. It can be slow, fast or anything in between.",
+    correctConcept: "concept-5",
+    options: ["concept-1", "concept-2", "concept-5", "concept-4"],
   },
 ];
