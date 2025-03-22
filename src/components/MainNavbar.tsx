@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Brain, MapPin, Briefcase, Menu, X } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { NotificationCenter } from "@/components/ui/NotificationCenter";
 
 const MainNavbar = () => {
   const [scrolled, setScrolled] = useState(false);
@@ -71,20 +72,25 @@ const MainNavbar = () => {
             </div>
           )}
 
-          {/* Mobile menu button */}
-          {isMobile && (
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden z-50 p-2 text-magic-dark"
-              aria-label="Toggle menu"
-            >
-              {mobileMenuOpen ? (
-                <X className="h-6 w-6" />
-              ) : (
-                <Menu className="h-6 w-6" />
-              )}
-            </button>
-          )}
+          {/* User menu and notifications */}
+          <div className="flex items-center gap-4">
+            <NotificationCenter />
+
+            {/* Mobile menu button */}
+            {isMobile && (
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="md:hidden z-50 p-2 text-magic-dark"
+                aria-label="Toggle menu"
+              >
+                {mobileMenuOpen ? (
+                  <X className="h-6 w-6" />
+                ) : (
+                  <Menu className="h-6 w-6" />
+                )}
+              </button>
+            )}
+          </div>
 
           {/* Mobile Navigation */}
           {isMobile && (

@@ -34,6 +34,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import { sendDocumentToMentor } from "@/services/documentSharingService";
 
 interface CVDashboardProps {
   cvVersions: CVVersion[];
@@ -47,6 +48,7 @@ const CVDashboard: React.FC<CVDashboardProps> = ({ cvVersions }) => {
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isSending, setIsSending] = useState(false);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
@@ -150,18 +152,29 @@ const CVDashboard: React.FC<CVDashboardProps> = ({ cvVersions }) => {
         throw new Error(result.message || "Failed to upload file");
       }
 
-      // Add the new version to the versions list
+      // Extract file URL and analysis data from response
+      const fileUrl =
+        result.data?.fileUrl ||
+        `http://localhost:3000/api/cv/files/${selectedFile.name.replace(
+          /\s+/g,
+          "_"
+        )}`;
+      const score = result.data?.analysis?.score || 0;
+      const feedback = result.data?.analysis?.feedback || [
+        "Your CV has been uploaded successfully.",
+        "We are analyzing your CV for improvement opportunities.",
+        "Consider adding more details to your experience section.",
+      ];
+
+      // Add the new version to the versions list with analysis data
       const newVersion: CVVersion = {
         id: Date.now().toString(),
         name: selectedFile.name,
         dateCreated: new Date().toLocaleDateString(),
         dateModified: new Date().toLocaleDateString(),
-        score: 0, // Initial score
-        feedback: [
-          "Your CV has been uploaded successfully.",
-          "We are analyzing your CV for improvement opportunities.",
-          "Consider adding more details to your experience section.",
-        ],
+        fileUrl: fileUrl,
+        score: score,
+        feedback: feedback,
       };
 
       setVersions((prev) => [newVersion, ...prev]);
@@ -177,7 +190,7 @@ const CVDashboard: React.FC<CVDashboardProps> = ({ cvVersions }) => {
 
       toast({
         title: "Upload successful",
-        description: "Your CV has been uploaded successfully.",
+        description: `Your CV has been uploaded and scored ${score}/100.`,
       });
     } catch (error) {
       console.error("Error uploading file:", error);
@@ -214,6 +227,34 @@ const CVDashboard: React.FC<CVDashboardProps> = ({ cvVersions }) => {
     if (score >= 80) return "text-green-500";
     if (score >= 60) return "text-yellow-500";
     return "text-red-500";
+  };
+
+  const handleSendToMentor = async (version: CVVersion) => {
+    setIsSending(true);
+    try {
+      const result = await sendDocumentToMentor(version, "cv");
+
+      if (result.success) {
+        toast({
+          title: "Sent to mentor",
+          description: "Your CV has been sent to your mentor for review.",
+        });
+      } else {
+        throw new Error(result.message);
+      }
+    } catch (error) {
+      console.error("Error sending CV to mentor:", error);
+      toast({
+        title: "Failed to send",
+        description:
+          error instanceof Error
+            ? error.message
+            : "An error occurred when sending to mentor.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSending(false);
+    }
   };
 
   return (
@@ -434,7 +475,7 @@ const CVDashboard: React.FC<CVDashboardProps> = ({ cvVersions }) => {
           </CardContent>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 gap-6">
           {versions.map((version) => (
             <Card key={version.id} className="overflow-hidden">
               <CardHeader className="bg-muted/30 pb-4">
@@ -472,17 +513,19 @@ const CVDashboard: React.FC<CVDashboardProps> = ({ cvVersions }) => {
                 {version.feedback && version.feedback.length > 0 && (
                   <div className="mb-4">
                     <h4 className="text-sm font-medium mb-2">
-                      Evaluation Feedback:
+                      AI Evaluation Feedback:
                     </h4>
                     <ScrollArea className="h-32 w-full rounded-md border p-2">
                       <ul className="space-y-2">
                         {version.feedback.map((item, index) => (
                           <li key={index} className="flex items-start text-sm">
-                            {item.includes("Add") ||
-                            item.includes("Consider") ? (
+                            {item.toLowerCase().includes("add") ||
+                            item.toLowerCase().includes("consider") ||
+                            item.toLowerCase().includes("improve") ? (
                               <AlertTriangle className="h-4 w-4 text-yellow-500 mr-2 flex-shrink-0 mt-0.5" />
-                            ) : item.includes("Great") ||
-                              item.includes("good") ? (
+                            ) : item.toLowerCase().includes("great") ||
+                              item.toLowerCase().includes("good") ||
+                              item.toLowerCase().includes("excellent") ? (
                               <Check className="h-4 w-4 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
                             ) : (
                               <X className="h-4 w-4 text-red-500 mr-2 flex-shrink-0 mt-0.5" />
@@ -492,6 +535,16 @@ const CVDashboard: React.FC<CVDashboardProps> = ({ cvVersions }) => {
                         ))}
                       </ul>
                     </ScrollArea>
+                    <div className="text-xs text-muted-foreground mt-1 flex justify-between">
+                      <span>AI-generated feedback based on CV analysis</span>
+                      {version.score !== undefined && (
+                        <span
+                          className={`font-medium ${scoreColor(version.score)}`}
+                        >
+                          Score: {version.score}/100
+                        </span>
+                      )}
+                    </div>
                   </div>
                 )}
 
@@ -509,9 +562,24 @@ const CVDashboard: React.FC<CVDashboardProps> = ({ cvVersions }) => {
                     <FileText className="h-4 w-4 mr-2" />
                     Edit
                   </Button>
-                  <Button size="sm" className="flex-1">
-                    <Plus className="h-4 w-4 mr-2" />
-                    Duplicate
+                  <Button
+                    variant="default"
+                    size="sm"
+                    className="flex-1"
+                    onClick={() => handleSendToMentor(version)}
+                    disabled={isSending}
+                  >
+                    {isSending ? (
+                      <>
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        Sending...
+                      </>
+                    ) : (
+                      <>
+                        <Upload className="h-4 w-4 mr-2" />
+                        Send to Mentor
+                      </>
+                    )}
                   </Button>
                 </div>
               </CardContent>

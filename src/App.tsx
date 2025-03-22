@@ -1,4 +1,3 @@
-
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Index from "./pages/Index";
@@ -15,6 +14,7 @@ import LanguagePage from "./pages/inventory/LanguagePage";
 import Journey from "./pages/Journey";
 import UniversityBucket from "./pages/UniversityBucket";
 import { Toaster } from "./components/ui/toaster";
+import ReviewDocument from "./pages/ReviewDocument";
 
 import "./App.css";
 
@@ -38,6 +38,7 @@ function App() {
           <Route path="/inventory/language" element={<LanguagePage />} />
           <Route path="/journey" element={<Journey />} />
           <Route path="/uni-bucket" element={<UniversityBucket />} />
+          <Route path="/document/:id" element={<ReviewDocument />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
         <Toaster />

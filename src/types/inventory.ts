@@ -1,6 +1,6 @@
 // Tool categories and their statuses
-export type ToolCategory = 'lor' | 'cv' | 'sop' | 'phs' | 'language' | 'gpa';
-export type ToolStatus = 'not-started' | 'in-progress' | 'completed';
+export type ToolCategory = "lor" | "cv" | "sop" | "phs" | "language" | "gpa";
+export type ToolStatus = "not-started" | "in-progress" | "completed";
 
 // Tool types
 export interface ToolType {
@@ -21,7 +21,7 @@ export interface Recommender {
   email: string;
   institution: string;
   relationship: string;
-  status: 'requested' | 'in-progress' | 'submitted';
+  status: "requested" | "in-progress" | "submitted";
   dateRequested?: string;
   dateSubmitted?: string;
   notes?: string;
@@ -67,6 +67,7 @@ export interface RevisionNotification {
   commentsAdded: number;
   isRead: boolean;
   fileUrl?: string;
+  feedbackComments?: string;
 }
 
 // Personal History Statement types
@@ -86,7 +87,7 @@ export interface PHSVersion {
 // Chat Message type for "Ask a PhD Mentor" feature
 export interface ChatMessage {
   id: string;
-  sender: 'user' | 'mentor';
+  sender: "user" | "mentor";
   message: string;
   timestamp: string;
 }
