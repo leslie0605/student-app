@@ -1,14 +1,26 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { Brain, MapPin, Briefcase, Menu, X } from "lucide-react";
+import { Brain, MapPin, Briefcase, Menu, X, User, LogOut } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { NotificationCenter } from "@/components/ui/NotificationCenter";
+import { useAuth } from "@/contexts/AuthContext";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const MainNavbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const isMobile = useIsMobile();
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -23,6 +35,11 @@ const MainNavbar = () => {
       window.removeEventListener("scroll", handleScroll);
     };
   }, [scrolled]);
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
 
   const navItems = [
     { name: "Journey", path: "/journey", icon: <MapPin className="h-5 w-5" /> },
@@ -76,6 +93,43 @@ const MainNavbar = () => {
           <div className="flex items-center gap-4">
             <NotificationCenter />
 
+            {/* User menu dropdown */}
+            {user && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className="flex items-center gap-2 p-1 rounded-full hover:bg-muted focus:outline-none">
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage src={user.avatar || ""} alt={user.name} />
+                      <AvatarFallback>
+                        {user.name.substring(0, 2)}
+                      </AvatarFallback>
+                    </Avatar>
+                    {!isMobile && (
+                      <span className="font-medium text-sm">{user.name}</span>
+                    )}
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuLabel>
+                    <div className="flex flex-col">
+                      <span>{user.name}</span>
+                      <span className="text-xs text-muted-foreground">
+                        {user.email}
+                      </span>
+                    </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    onClick={handleLogout}
+                    className="text-destructive"
+                  >
+                    <LogOut className="mr-2 h-4 w-4" />
+                    Logout
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
+
             {/* Mobile menu button */}
             {isMobile && (
               <button
@@ -112,6 +166,20 @@ const MainNavbar = () => {
                     {item.name}
                   </Link>
                 ))}
+
+                {/* Mobile logout button */}
+                {user && (
+                  <button
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      handleLogout();
+                    }}
+                    className="flex items-center gap-3 text-destructive hover:text-destructive/80 transition-all-200 text-xl font-medium"
+                  >
+                    <LogOut className="h-5 w-5" />
+                    Logout
+                  </button>
+                )}
               </div>
             </div>
           )}

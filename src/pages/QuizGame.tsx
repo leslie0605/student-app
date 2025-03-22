@@ -16,6 +16,10 @@ import {
   getQuizDescriptions,
   getQuizStats,
   saveQuizStats,
+  QuizGameData,
+  QuizStats,
+  Concept,
+  QuizQuestion,
 } from "@/utils/quizUtils";
 import { toast } from "sonner";
 import {
@@ -33,15 +37,26 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+// Define achievement interface to replace any types
+interface Achievement {
+  id: string;
+  name: string;
+  description: string;
+  icon: React.ReactNode;
+  condition: (stats: QuizStats) => boolean;
+  level: number;
+  isNew?: boolean;
+}
+
 // Define achievements with multiple levels
-const ACHIEVEMENTS = [
+const ACHIEVEMENTS: Achievement[] = [
   // Brain Master achievements (Answer questions)
   ...[5, 10, 15, 20, 25, 30, 35, 40, 45, 50].map((threshold, index) => ({
     id: `quiz_master_${index + 1}`,
     name: "Quiz Master",
     description: `Answer ${threshold} questions correctly`,
     icon: <Brain className="h-5 w-5 text-amber-500" />,
-    condition: (stats: any) => stats.totalCorrect >= threshold,
+    condition: (stats: QuizStats) => stats.totalCorrect >= threshold,
     level: index + 1,
   })),
 
@@ -52,7 +67,7 @@ const ACHIEVEMENTS = [
       name: "XP Champ",
       description: `Earn ${threshold} XP total`,
       icon: <Sparkles className="h-5 w-5 text-amber-500" />,
-      condition: (stats: any) => stats.totalXP >= threshold,
+      condition: (stats: QuizStats) => stats.totalXP >= threshold,
       level: index + 1,
     })
   ),
@@ -63,7 +78,7 @@ const ACHIEVEMENTS = [
     name: "Streak Legend",
     description: `Achieve a streak of ${threshold}`,
     icon: <Star className="h-5 w-5 text-amber-500" />,
-    condition: (stats: any) => stats.highestStreak >= threshold,
+    condition: (stats: QuizStats) => stats.highestStreak >= threshold,
     level: index + 1,
   })),
 ];
@@ -81,10 +96,7 @@ const QuizGame = () => {
   const navigate = useNavigate();
   const { quizId = "" } = useParams<{ quizId: string }>();
 
-  const [quizData, setQuizData] = useState<{
-    questions: any[];
-    options: any[];
-  } | null>(null);
+  const [quizData, setQuizData] = useState<QuizGameData | null>(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [showFeedback, setShowFeedback] = useState(false);
@@ -96,7 +108,7 @@ const QuizGame = () => {
     correctAnswers: 0,
   });
   const [quizStats, setQuizStats] = useState(getQuizStats());
-  const [newAchievements, setNewAchievements] = useState<any[]>([]);
+  const [newAchievements, setNewAchievements] = useState<Achievement[]>([]);
   const [isQuizAlreadyCompleted, setIsQuizAlreadyCompleted] = useState(false);
   const [userAnswers, setUserAnswers] = useState<UserQuizAnswer[]>([]);
   const [isInReviewMode, setIsInReviewMode] = useState(false);
@@ -110,10 +122,30 @@ const QuizGame = () => {
       setError(null);
 
       try {
-        // Load quiz data based on quizId
-        const data = loadQuizData(quizId);
+        // Load quiz data based on quizId - use await for async function
+        const data = await loadQuizData(quizId);
+
+        // Log the received data for debugging
+        console.log("Received quiz game data:", data);
+
         if (!data) {
           setError(`Quiz data for ${quizId} not found or not yet implemented.`);
+          return;
+        }
+
+        // Handle redirect for matching or flashcard games
+        if ("redirect" in data) {
+          if (data.gameType === "matching") {
+            navigate(`/matching-game/${data.gameId}`);
+          } else if (data.gameType === "flashcard") {
+            navigate(`/flashcard-game/${data.gameId}`);
+          }
+          return;
+        }
+
+        // Ensure we have questions and options
+        if (!("questions" in data)) {
+          setError("Invalid quiz data format");
           return;
         }
 
@@ -139,7 +171,7 @@ const QuizGame = () => {
     };
 
     loadQuiz();
-  }, [quizId]);
+  }, [quizId, navigate]);
 
   // Early returns for loading and error states
   if (loading) {
@@ -232,11 +264,11 @@ const QuizGame = () => {
 
   // Find the selected and correct option objects
   const selectedOptionObject = selectedOption
-    ? options.find((option: any) => option.id === selectedOption) || null
+    ? options.find((option) => option.id === selectedOption) || null
     : null;
 
   const correctOptionObject =
-    options.find((option: any) => option.id === correctOptionId) || options[0];
+    options.find((option) => option.id === correctOptionId) || options[0];
 
   const handleOptionClick = (optionId: string) => {
     if (selectedOption || showFeedback || isInReviewMode) return;
@@ -347,11 +379,14 @@ const QuizGame = () => {
   };
 
   // Get options for the current question
-  const displayOptions = currentQuestion
-    ? options.filter((option: any) =>
-        currentQuestion.options.includes(option.id)
-      )
-    : [];
+  const displayOptions =
+    currentQuestion && currentQuestion.options
+      ? options.filter(
+          (option) =>
+            Array.isArray(currentQuestion.options) &&
+            currentQuestion.options.includes(option.id)
+        )
+      : options.slice(0, 4); // Fallback to first 4 options if options array is not defined
 
   // Get quiz title and icon based on quiz ID
   const quizTitle = getQuizTitle(quizId);
@@ -362,11 +397,13 @@ const QuizGame = () => {
     return quizIconMap[quizId] || defaultQuizIcon;
   };
 
-  // Get quiz image from metadata
+  // Get quiz image from metadata - get from quizData instead of calling loadQuizData again
   const getQuizImage = () => {
-    const defaultImage = "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?auto=format&fit=crop&w=800&q=80";
-    const quiz = loadQuizData(quizId);
-    return quiz?.metadata?.image || defaultImage;
+    const defaultImage =
+      "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?auto=format&fit=crop&w=800&q=80";
+
+    // Use the data we already have instead of making a new async call
+    return quizData?.metadata?.image || defaultImage;
   };
 
   return (
@@ -465,7 +502,11 @@ const QuizGame = () => {
                     {displayOptions.map((option) => (
                       <button
                         key={option.id}
-                        onClick={() => !selectedOption && !showFeedback && handleOptionClick(option.id)}
+                        onClick={() =>
+                          !selectedOption &&
+                          !showFeedback &&
+                          handleOptionClick(option.id)
+                        }
                         disabled={!!selectedOption || showFeedback}
                         className={cn(
                           "text-xs sm:text-sm p-2 h-auto transition-all duration-300",

@@ -4,14 +4,14 @@ export interface Concept {
   description: string;
 }
 
-export interface QuizQuestion {
+export interface Question {
   id: number;
   question: string;
   explanation: string;
   correctConcept: string;
 }
 
-export const quizMetadata = {
+export const Metadata = {
   id: "brain-quiz",
   title: "Functions of Brain Regions",
   description:
@@ -127,7 +127,7 @@ export const concepts: Concept[] = [
   },
 ];
 
-export const quizQuestions: QuizQuestion[] = [
+export const questions: Question[] = [
   {
     id: 1,
     question:
