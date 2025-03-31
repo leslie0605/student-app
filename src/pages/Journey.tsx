@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
@@ -11,10 +12,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ProgressBar from "@/components/ProgressBar";
 import JourneyCalendarView from "@/components/journey/JourneyCalendarView";
 import JourneyRoadmapView from "@/components/journey/JourneyRoadmapView";
+import { AddTaskDialog } from "@/components/journey/AddTaskDialog";
 import {
   fetchApplicationTasks,
   toggleTaskCompletion,
+  addApplicationTask
 } from "@/services/journeyService";
+import { ApplicationTask } from "@/types/journey";
 
 const Journey = () => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(
@@ -43,6 +47,18 @@ const Journey = () => {
     },
   });
 
+  // Add task mutation
+  const addTaskMutation = useMutation({
+    mutationFn: (task: Omit<ApplicationTask, 'id'>) => addApplicationTask(task),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["applicationTasks"] });
+      toast.success("Task added successfully!");
+    },
+    onError: () => {
+      toast.error("Failed to add task");
+    }
+  });
+
   // Calculate progress
   const completedTasks = applicationTasks.filter(
     (task) => task.completed
@@ -63,6 +79,10 @@ const Journey = () => {
         },
       }
     );
+  };
+
+  const handleAddTask = (task: Omit<ApplicationTask, 'id'>) => {
+    addTaskMutation.mutate(task);
   };
 
   return (
@@ -99,6 +119,7 @@ const Journey = () => {
               <Map className="h-4 w-4" />
               Roadmap
             </Button>
+            <AddTaskDialog onAddTask={handleAddTask} />
           </div>
         </div>
 
