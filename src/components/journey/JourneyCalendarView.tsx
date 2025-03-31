@@ -1,12 +1,17 @@
-
-import React, { useState } from 'react';
-import { Calendar } from '@/components/ui/calendar';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Skeleton } from '@/components/ui/skeleton';
-import { format, isSameDay } from 'date-fns';
-import { CalendarDays, CheckCircle2, Clock, PlusCircle } from 'lucide-react';
-import { ApplicationTask } from '@/types/journey';
+import React, { useState } from "react";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Skeleton } from "@/components/ui/skeleton";
+import { format, isSameDay } from "date-fns";
+import { CalendarDays, CheckCircle2, Clock, PlusCircle } from "lucide-react";
+import { ApplicationTask } from "@/types/journey";
 
 interface JourneyCalendarViewProps {
   tasks: ApplicationTask[];
@@ -21,16 +26,19 @@ const JourneyCalendarView: React.FC<JourneyCalendarViewProps> = ({
   selectedDate,
   onDateSelect,
   onTaskToggle,
-  isLoading
+  isLoading,
 }) => {
   // Find tasks for the selected date
-  const tasksForSelectedDate = selectedDate 
-    ? tasks.filter(task => selectedDate && isSameDay(new Date(task.dueDate), selectedDate))
+  const tasksForSelectedDate = selectedDate
+    ? tasks.filter(
+        (task) =>
+          selectedDate && isSameDay(new Date(task.dueDate), selectedDate)
+      )
     : [];
 
   // Create a list of dates that have tasks
-  const taskDates = tasks.map(task => new Date(task.dueDate));
-  
+  const taskDates = tasks.map((task) => new Date(task.dueDate));
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-[350px_1fr] gap-6">
       {/* Calendar */}
@@ -49,12 +57,12 @@ const JourneyCalendarView: React.FC<JourneyCalendarViewProps> = ({
               hasTasks: taskDates,
             }}
             modifiersStyles={{
-              hasTasks: { 
-                fontWeight: 'bold',
-                backgroundColor: 'rgba(155, 135, 245, 0.1)',
-                borderRadius: '100%',
-                position: 'relative',
-                color: '#9b87f5',
+              hasTasks: {
+                fontWeight: "bold",
+                backgroundColor: "rgba(155, 135, 245, 0.1)",
+                borderRadius: "100%",
+                position: "relative",
+                color: "#9b87f5",
               },
             }}
           />
@@ -68,20 +76,26 @@ const JourneyCalendarView: React.FC<JourneyCalendarViewProps> = ({
             {selectedDate ? (
               <div className="flex items-center gap-2">
                 <CalendarDays className="h-5 w-5 text-magic-purple" />
-                <span>{format(selectedDate, 'MMMM d, yyyy')}</span>
+                <span>{format(selectedDate, "MMMM d, yyyy")}</span>
               </div>
-            ) : "Select a Date"}
+            ) : (
+              "Select a Date"
+            )}
           </CardTitle>
           <CardDescription>
             {tasksForSelectedDate.length > 0
-              ? `${tasksForSelectedDate.length} task${tasksForSelectedDate.length === 1 ? '' : 's'}`
-              : selectedDate ? "No tasks scheduled for this date" : "Please select a date to see tasks"}
+              ? `${tasksForSelectedDate.length} task${
+                  tasksForSelectedDate.length === 1 ? "" : "s"
+                }`
+              : selectedDate
+              ? "No tasks scheduled for this date"
+              : "Please select a date to see tasks"}
           </CardDescription>
         </CardHeader>
         <CardContent>
           {isLoading ? (
             <div className="space-y-4">
-              {[1, 2, 3].map(i => (
+              {[1, 2, 3].map((i) => (
                 <div key={i} className="flex gap-4 items-center">
                   <Skeleton className="h-5 w-5 rounded-full" />
                   <div className="space-y-2 flex-1">
@@ -95,9 +109,12 @@ const JourneyCalendarView: React.FC<JourneyCalendarViewProps> = ({
             <>
               {tasksForSelectedDate.length > 0 ? (
                 <div className="space-y-4">
-                  {tasksForSelectedDate.map(task => (
-                    <div key={task.id} className="flex items-start gap-3 bg-gray-50 p-3 rounded-md">
-                      <Checkbox 
+                  {tasksForSelectedDate.map((task) => (
+                    <div
+                      key={task.id}
+                      className="flex items-start gap-3 bg-gray-50 p-3 rounded-md"
+                    >
+                      <Checkbox
                         id={`task-${task.id}`}
                         checked={task.completed}
                         onCheckedChange={(checked) => {
@@ -108,30 +125,42 @@ const JourneyCalendarView: React.FC<JourneyCalendarViewProps> = ({
                       <div className="flex-1">
                         <label
                           htmlFor={`task-${task.id}`}
-                          className={`font-medium text-sm cursor-pointer ${task.completed ? 'line-through text-muted-foreground' : ''}`}
+                          className={`font-medium text-sm cursor-pointer ${
+                            task.completed
+                              ? "line-through text-muted-foreground"
+                              : ""
+                          }`}
                         >
                           {task.title}
                         </label>
                         <div className="text-xs text-muted-foreground mt-1">
                           <div className="flex items-center gap-1">
                             <Clock className="h-3.5 w-3.5" />
-                            <span>Due: {format(new Date(task.dueDate), 'h:mm a')}</span>
+                            <span>
+                              Due: {format(new Date(task.dueDate), "h:mm a")}
+                            </span>
                           </div>
                         </div>
                       </div>
-                      
+
                       {task.completed && (
                         <CheckCircle2 className="h-5 w-5 text-green-500" />
                       )}
                     </div>
                   ))}
                 </div>
-              ) : selectedDate && (
-                <div className="text-center py-8">
-                  <PlusCircle className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />
-                  <p className="text-muted-foreground">No tasks for this date</p>
-                  <p className="text-sm text-muted-foreground mt-1">Click "Add Task" to create one</p>
-                </div>
+              ) : (
+                selectedDate && (
+                  <div className="text-center py-8">
+                    <PlusCircle className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />
+                    <p className="text-muted-foreground">
+                      No tasks for this date
+                    </p>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Click "Add Task" to create one
+                    </p>
+                  </div>
+                )
               )}
             </>
           )}

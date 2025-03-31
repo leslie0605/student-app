@@ -94,15 +94,26 @@ const QuizSelection = () => {
       console.log(`Found game module in registry:`, gameModule ? "Yes" : "No");
 
       if (gameModule) {
+        const gameType = getGameTypeFromModule(gameModule);
         console.log(`Game module details:`, {
           id: gameModule.id,
           title: gameModule.title,
           icon: gameModule.icon,
-          type: getGameTypeFromModule(gameModule),
+          type: gameType,
         });
 
-        // Use game data to determine the navigation route
-        navigate(`/quiz-game/${quizId}`);
+        // Route to the correct game type based on the detected type
+        if (gameType === "matching") {
+          console.log(`Navigating to matching game from registry: ${quizId}`);
+          navigate(`/matching-game/${quizId}`);
+        } else if (gameType === "flashcard") {
+          console.log(`Navigating to flashcard game from registry: ${quizId}`);
+          navigate(`/flashcard-game/${quizId}`);
+        } else {
+          // Default to quiz game
+          console.log(`Navigating to quiz game from registry: ${quizId}`);
+          navigate(`/quiz-game/${quizId}`);
+        }
         return;
       }
 
