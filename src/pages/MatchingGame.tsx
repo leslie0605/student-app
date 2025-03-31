@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ChevronLeft, RefreshCw, Check, X, Trophy } from "lucide-react";
@@ -79,15 +78,29 @@ const MatchingGame = () => {
           return;
         }
 
-        if ('pairs' in data.data) {
-          // It's a matching game
-          const matchingData = data;
-          setGameTitle(matchingData.metadata?.title || "Matching Game");
-
-          // Initialize game with pairs from the data
-          const pairs = matchingData.data.pairs;
+        if ('data' in data) {
+          // Initialize game with data from the response
+          // Safely check for presence of pairs or cards
+          let pairs: MatchingPair[] = [];
+          let gameTitle = data.metadata?.title || "Matching Game";
+          
+          if ('pairs' in data.data) {
+            // It's a matching game format
+            pairs = data.data.pairs;
+          } else if ('cards' in data.data) {
+            // It's a flashcard game format, convert cards to matching pairs
+            pairs = data.data.cards.map(card => ({
+              id: card.id,
+              term: card.front,
+              definition: card.back,
+            }));
+          }
+          
+          setGameTitle(gameTitle);
+          
+          // Initialize game with the prepared pairs
           const shuffledDefinitions = [...pairs].sort(() => Math.random() - 0.5);
-
+          
           setGameState({
             pairs,
             shuffledDefinitions,
@@ -98,32 +111,8 @@ const MatchingGame = () => {
             correctMatches: 0,
             isCompleted: false,
           });
-        } else if ('cards' in data.data) {
-          // It's a flashcard game, but we're in MatchingGame component
-          // Convert cards to matching pairs format
-          const convertedPairs = data.data.cards.map(card => ({
-            id: card.id,
-            term: card.front,
-            definition: card.back,
-          }));
-          
-          setGameTitle(data.metadata?.title || "Matching Game");
-          
-          // Initialize game with converted pairs
-          const shuffledDefinitions = [...convertedPairs].sort(() => Math.random() - 0.5);
-          
-          setGameState({
-            pairs: convertedPairs,
-            shuffledDefinitions,
-            selectedTerm: null,
-            selectedDefinition: null,
-            matchedPairs: [],
-            attempts: 0,
-            correctMatches: 0,
-            isCompleted: false,
-          });
         } else {
-          setError("Invalid game data format for matching game");
+          setError("Invalid game data format");
         }
       } catch (error) {
         console.error("Error loading matching game:", error);
