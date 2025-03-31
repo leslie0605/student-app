@@ -121,6 +121,15 @@ export const sendDocumentToMentor = async (
       );
     }
 
+    // Update document status if it's a PHS
+    if (documentType === "phs" && "sentToMentor" in document) {
+      await updatePHSSentToMentor(
+        document.id,
+        true,
+        "mentor-1" // Fixed mentor ID for this simple implementation
+      );
+    }
+
     return {
       success: true,
       message: "Document successfully sent to mentor for review",
@@ -262,6 +271,29 @@ export const updateSoPSentToMentor = async (
   });
 };
 
+// Function to update a PHS version's "sent to mentor" status
+export const updatePHSSentToMentor = async (
+  id: string,
+  status: boolean,
+  mentorId?: string
+): Promise<PHSVersion> => {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      const phsIndex = mockPHSVersions.findIndex((p) => p.id === id);
+      if (phsIndex >= 0) {
+        mockPHSVersions[phsIndex].sentToMentor = status;
+        mockPHSVersions[phsIndex].mentorId = mentorId;
+        mockPHSVersions[phsIndex].lastSentDate = new Date()
+          .toISOString()
+          .split("T")[0];
+        resolve(mockPHSVersions[phsIndex]);
+      } else {
+        reject(new Error("PHS version not found"));
+      }
+    }, 500);
+  });
+};
+
 // Mock data for SoP versions (used by the updateSoPSentToMentor function)
 const mockSoPVersions: SoPVersion[] = [
   {
@@ -280,6 +312,19 @@ const mockSoPVersions: SoPVersion[] = [
     targetProgram: "Computer Science PhD",
     dateCreated: "2023-01-20",
     dateModified: "2023-03-05",
+    sentToMentor: false,
+  },
+];
+
+// Mock data for PHS versions (used by the updatePHSSentToMentor function)
+const mockPHSVersions: PHSVersion[] = [
+  {
+    id: "1",
+    name: "Berkeley PHS",
+    targetUniversity: "UC Berkeley",
+    targetProgram: "Psychological Science",
+    dateCreated: "2023-02-20",
+    dateModified: "2023-03-15",
     sentToMentor: false,
   },
 ];

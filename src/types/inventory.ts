@@ -82,6 +82,9 @@ export interface PHSVersion {
   fileUrl?: string;
   score?: number;
   feedback?: string[];
+  sentToMentor?: boolean;
+  mentorId?: string;
+  lastSentDate?: string;
 }
 
 // Chat Message type for "Ask a PhD Mentor" feature
