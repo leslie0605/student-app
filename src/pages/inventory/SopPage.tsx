@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
@@ -37,13 +38,14 @@ const SopPage = () => {
     try {
       const revisions = await checkForDocumentRevisions();
       
-      // Convert the revisions to notification format
+      // Convert the revisions to notification format, handling different date formats
       const notifications: RevisionNotification[] = revisions.map(revision => ({
         id: revision.id,
         documentId: revision.documentId,
         documentName: revision.documentName,
         mentorName: revision.mentorName,
-        date: new Date(revision.revisionDate).toISOString().split('T')[0],
+        // Use date property directly as defined in RevisionNotification type
+        date: revision.date || new Date().toISOString().split('T')[0],
         editsAccepted: revision.editsAccepted,
         commentsAdded: revision.commentsAdded,
         isRead: false,

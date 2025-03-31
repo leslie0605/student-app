@@ -47,7 +47,8 @@ const SendToMentorDialog: React.FC<SendToMentorDialogProps> = ({ document }) => 
 
     setIsSending(true);
     try {
-      const result = await sendDocumentToMentor(document);
+      // Adding the missing parameters - mentorId and priorityLevel
+      const result = await sendDocumentToMentor(document, selectedMentor, priority);
       
       if (result.success) {
         toast({

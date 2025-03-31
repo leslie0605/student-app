@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
@@ -66,16 +67,29 @@ const FlashcardGame = () => {
         }
 
         // Check for flashcard game data structure
-        if (!("data" in data) || !data.data.cards) {
-          setError("Invalid game data format for flashcard game");
+        if (!("data" in data)) {
+          setError("Invalid game data format");
           return;
         }
 
-        // We now know it's flashcard game data
-        const flashcardData = data as FlashcardGameData;
-
-        setGameTitle(flashcardData.metadata?.title || "Flashcard Game");
-        setCards(flashcardData.data.cards);
+        // Check if it's a flashcard game or matching game
+        if ('cards' in data.data) {
+          // It's a flashcard game
+          setGameTitle(data.metadata?.title || "Flashcard Game");
+          setCards(data.data.cards);
+        } else if ('pairs' in data.data) {
+          // It's a matching game, but we're in FlashcardGame component
+          // Convert pairs to flashcard format
+          const convertedCards = data.data.pairs.map(pair => ({
+            id: pair.id,
+            front: pair.term,
+            back: pair.definition,
+          }));
+          setGameTitle(data.metadata?.title || "Flashcard Game");
+          setCards(convertedCards);
+        } else {
+          setError("Invalid game data format for flashcard game");
+        }
       } catch (error) {
         console.error("Error loading flashcard game:", error);
         setError("Failed to load game data");

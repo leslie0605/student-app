@@ -1,4 +1,5 @@
-import React from "react";
+
+import React, { useState, useEffect } from "react";
 import { UserQuizAnswer, loadQuizData } from "@/utils/quizUtils";
 import { CheckCircle, XCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -14,13 +15,28 @@ const QuizReview: React.FC<QuizReviewProps> = ({
   onStartNewQuiz,
 }) => {
   const { quizId = "brain-quiz" } = useParams<{ quizId: string }>();
+  const [questions, setQuestions] = useState<any[]>([]);
+  const [options, setOptions] = useState<any[]>([]);
 
   // Load quiz data
-  const quizData = loadQuizData(quizId);
+  useEffect(() => {
+    const fetchQuizData = async () => {
+      if (!quizId) return;
+      try {
+        const data = await loadQuizData(quizId);
+        if (data && 'questions' in data) {
+          setQuestions(data.questions);
+          setOptions(data.options);
+        }
+      } catch (error) {
+        console.error("Error loading quiz data:", error);
+      }
+    };
 
-  if (!quizData || !userAnswers.length) return null;
+    fetchQuizData();
+  }, [quizId]);
 
-  const { questions, options } = quizData;
+  if (!questions.length || !options.length || !userAnswers.length) return null;
 
   return (
     <div className="w-full max-w-3xl mx-auto">
