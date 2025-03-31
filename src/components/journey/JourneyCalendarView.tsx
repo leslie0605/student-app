@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -38,6 +39,11 @@ const JourneyCalendarView: React.FC<JourneyCalendarViewProps> = ({
 
   // Create a list of dates that have tasks
   const taskDates = tasks.map((task) => new Date(task.dueDate));
+
+  // Handle checkbox change
+  const handleCheckboxChange = (taskId: string, checked: boolean) => {
+    onTaskToggle(taskId, checked);
+  };
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-[350px_1fr] gap-6">
@@ -118,7 +124,9 @@ const JourneyCalendarView: React.FC<JourneyCalendarViewProps> = ({
                         id={`task-${task.id}`}
                         checked={task.completed}
                         onCheckedChange={(checked) => {
-                          onTaskToggle(task.id, checked as boolean);
+                          if (typeof checked === 'boolean') {
+                            handleCheckboxChange(task.id, checked);
+                          }
                         }}
                         className="mt-0.5"
                       />

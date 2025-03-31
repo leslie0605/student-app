@@ -45,6 +45,11 @@ const JourneyRoadmapView: React.FC<JourneyRoadmapViewProps> = ({
   });
   
   const now = new Date();
+
+  // Handle checkbox change
+  const handleCheckboxChange = (taskId: string, checked: boolean) => {
+    onTaskToggle(taskId, checked);
+  };
   
   if (isLoading) {
     return (
@@ -110,7 +115,9 @@ const JourneyRoadmapView: React.FC<JourneyRoadmapViewProps> = ({
                             id={`roadmap-task-${task.id}`}
                             checked={task.completed}
                             onCheckedChange={(checked) => {
-                              onTaskToggle(task.id, checked as boolean);
+                              if (typeof checked === 'boolean') {
+                                handleCheckboxChange(task.id, checked);
+                              }
                             }}
                             className="mt-1"
                           />

@@ -107,6 +107,7 @@ const Journey = () => {
               variant={viewMode === "calendar" ? "default" : "outline"}
               onClick={() => setViewMode("calendar")}
               className="flex items-center gap-2"
+              type="button"
             >
               <CalendarIcon className="h-4 w-4" />
               Calendar
@@ -115,6 +116,7 @@ const Journey = () => {
               variant={viewMode === "roadmap" ? "default" : "outline"}
               onClick={() => setViewMode("roadmap")}
               className="flex items-center gap-2"
+              type="button"
             >
               <Map className="h-4 w-4" />
               Roadmap

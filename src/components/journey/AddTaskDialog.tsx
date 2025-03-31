@@ -21,7 +21,9 @@ export const AddTaskDialog: React.FC<AddTaskDialogProps> = ({ onAddTask }) => {
   const [priority, setPriority] = useState<'low' | 'medium' | 'high'>('medium');
   const [isOpen, setIsOpen] = useState(false);
 
-  const handleSubmit = () => {
+  const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    
     if (!title.trim()) return;
 
     const newTask: Omit<ApplicationTask, 'id'> = {
@@ -113,7 +115,7 @@ export const AddTaskDialog: React.FC<AddTaskDialogProps> = ({ onAddTask }) => {
           </div>
         </div>
         <div className="flex justify-end">
-          <Button onClick={handleSubmit}>Create Task</Button>
+          <Button type="button" onClick={handleSubmit}>Create Task</Button>
         </div>
       </DialogContent>
     </Dialog>
