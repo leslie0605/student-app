@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React from "react";
 import { Calendar } from "@/components/ui/calendar";
 import {
   Card,
@@ -13,12 +13,14 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { format, isSameDay } from "date-fns";
 import { CalendarDays, CheckCircle2, Clock, PlusCircle } from "lucide-react";
 import { ApplicationTask } from "@/types/journey";
+import { AddTaskDialog } from "./AddTaskDialog";
 
 interface JourneyCalendarViewProps {
   tasks: ApplicationTask[];
   selectedDate: Date | undefined;
   onDateSelect: (date: Date | undefined) => void;
   onTaskToggle: (taskId: string, completed: boolean) => void;
+  onAddTask: (task: Omit<ApplicationTask, 'id'>) => void;
   isLoading: boolean;
 }
 
@@ -27,6 +29,7 @@ const JourneyCalendarView: React.FC<JourneyCalendarViewProps> = ({
   selectedDate,
   onDateSelect,
   onTaskToggle,
+  onAddTask,
   isLoading,
 }) => {
   // Find tasks for the selected date
@@ -160,13 +163,26 @@ const JourneyCalendarView: React.FC<JourneyCalendarViewProps> = ({
               ) : (
                 selectedDate && (
                   <div className="text-center py-8">
-                    <PlusCircle className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />
-                    <p className="text-muted-foreground">
-                      No tasks for this date
-                    </p>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      Click "Add Task" to create one
-                    </p>
+                    <AddTaskDialog 
+                      onAddTask={(task) => {
+                        // Set the task's due date to the selected date
+                        const taskWithDate = {
+                          ...task,
+                          dueDate: selectedDate.toISOString()
+                        };
+                        onAddTask(taskWithDate);
+                      }}
+                    >
+                      <div className="flex flex-col items-center cursor-pointer hover:bg-gray-50 p-4 rounded-md transition-colors">
+                        <PlusCircle className="h-12 w-12 text-muted-foreground/50 mb-4" />
+                        <p className="text-muted-foreground">
+                          No tasks for this date
+                        </p>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          Click to Add Task
+                        </p>
+                      </div>
+                    </AddTaskDialog>
                   </div>
                 )
               )}

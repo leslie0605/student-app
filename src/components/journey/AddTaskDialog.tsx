@@ -11,9 +11,10 @@ import { ApplicationTask } from '@/types/journey';
 
 interface AddTaskDialogProps {
   onAddTask: (task: Omit<ApplicationTask, 'id'>) => void;
+  children?: React.ReactNode;
 }
 
-export const AddTaskDialog: React.FC<AddTaskDialogProps> = ({ onAddTask }) => {
+export const AddTaskDialog: React.FC<AddTaskDialogProps> = ({ onAddTask, children }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState<string>('Other');
@@ -48,10 +49,12 @@ export const AddTaskDialog: React.FC<AddTaskDialogProps> = ({ onAddTask }) => {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" className="flex items-center gap-2">
-          <PlusCircle className="h-4 w-4" />
-          Add Task
-        </Button>
+        {children || (
+          <Button variant="outline" className="flex items-center gap-2">
+            <PlusCircle className="h-4 w-4" />
+            Add Task
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
