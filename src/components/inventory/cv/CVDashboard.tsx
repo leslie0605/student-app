@@ -1,3 +1,4 @@
+
 import React, { useState, useRef } from "react";
 import { CVVersion } from "@/types/inventory";
 import {
@@ -20,17 +21,16 @@ import {
   DialogTrigger,
   DialogFooter,
 } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   FileText,
   Upload,
-  Plus,
   Download,
   Calendar,
   FileX,
   Star,
   Check,
-  X,
-  AlertTriangle,
   Loader2,
 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
@@ -44,7 +44,6 @@ const CVDashboard: React.FC<CVDashboardProps> = ({ cvVersions }) => {
   const [versions, setVersions] = useState<CVVersion[]>(cvVersions);
   const { toast } = useToast();
   const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false);
-  const [isNewVersionDialogOpen, setIsNewVersionDialogOpen] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -208,18 +207,12 @@ const CVDashboard: React.FC<CVDashboardProps> = ({ cvVersions }) => {
   };
 
   const handleDownload = (version: CVVersion) => {
-    // Mock implementation - in a real app, this would download the file
+    // In a real app, this would download the file
+    window.open(version.fileUrl, "_blank");
+
     toast({
       title: "File download",
       description: `Downloading ${version.name}...`,
-    });
-  };
-
-  const handleFormatting = () => {
-    // Mock implementation - in a real app, this would trigger formatting
-    toast({
-      title: "Auto-formatting",
-      description: "Auto-formatting to APA format would be implemented here.",
     });
   };
 
@@ -258,337 +251,179 @@ const CVDashboard: React.FC<CVDashboardProps> = ({ cvVersions }) => {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h3 className="text-xl font-semibold">CV/Resume Dashboard</h3>
-        <div className="flex space-x-2">
-          <Dialog
-            open={isUploadDialogOpen}
-            onOpenChange={setIsUploadDialogOpen}
-          >
-            <DialogTrigger asChild>
-              <Button variant="outline" className="gap-2">
-                <Upload className="h-4 w-4" />
-                Upload CV
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Upload CV/Resume</DialogTitle>
-                <DialogDescription>
-                  Upload your current CV or resume. Supported formats: PDF,
-                  DOCX.
-                </DialogDescription>
-              </DialogHeader>
-              <div className="py-6">
-                <div
-                  className={`border-2 border-dashed rounded-lg p-12 flex flex-col items-center justify-center ${
-                    selectedFile ? "border-green-500 bg-green-50" : ""
-                  }`}
-                  onDragOver={handleDragOver}
-                  onDrop={handleDrop}
-                >
-                  {selectedFile ? (
-                    <>
-                      <FileText className="h-12 w-12 text-green-500 mb-4" />
-                      <p className="mb-2 text-sm text-center font-medium">
-                        {selectedFile.name}
-                      </p>
-                      <p className="text-xs text-muted-foreground mb-4">
-                        {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
-                      </p>
-                      <Button
-                        variant="outline"
-                        onClick={() => {
-                          setSelectedFile(null);
-                          if (fileInputRef.current)
-                            fileInputRef.current.value = "";
-                        }}
-                      >
-                        Change File
-                      </Button>
-                    </>
-                  ) : (
-                    <>
-                      <FileText className="h-12 w-12 text-muted-foreground mb-4" />
-                      <p className="mb-2 text-sm text-center">
-                        Drag and drop your CV here, or click to browse
-                      </p>
-                      <p className="text-xs text-muted-foreground mb-4">
-                        PDF or DOCX, up to 5MB
-                      </p>
-                      <Button onClick={() => fileInputRef.current?.click()}>
-                        Select File
-                      </Button>
-                      <input
-                        type="file"
-                        accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                        ref={fileInputRef}
-                        className="hidden"
-                        onChange={handleFileChange}
-                      />
-                    </>
-                  )}
-                </div>
-              </div>
-              <DialogFooter className="flex space-x-2">
-                <Button variant="outline" onClick={handleFormatting}>
-                  Auto-Format to APA Style
-                </Button>
-                <Button
-                  onClick={handleFileUpload}
-                  disabled={!selectedFile || isUploading}
-                >
-                  {isUploading ? (
-                    <>
-                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      Uploading...
-                    </>
-                  ) : (
-                    "Upload"
-                  )}
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-
-          <Dialog
-            open={isNewVersionDialogOpen}
-            onOpenChange={setIsNewVersionDialogOpen}
-          >
-            <DialogTrigger asChild>
-              <Button className="gap-2">
-                <Plus className="h-4 w-4" />
-                New Version
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Create New CV Version</DialogTitle>
-                <DialogDescription>
-                  Create a new version or duplicate an existing one.
-                </DialogDescription>
-              </DialogHeader>
-              <div className="py-4">
-                {/* Form would go here in a real implementation */}
-                <p className="text-center text-muted-foreground">
-                  CV creation form would go here
-                </p>
-              </div>
-            </DialogContent>
-          </Dialog>
+    <div>
+      <div className="flex justify-between items-center mb-6">
+        <div>
+          <h2 className="text-2xl font-bold">CV/Resume</h2>
+          <p className="text-sm text-muted-foreground mt-1">
+            Upload and manage your CV/Resume documents
+          </p>
         </div>
+        <Dialog open={isUploadDialogOpen} onOpenChange={setIsUploadDialogOpen}>
+          <DialogTrigger asChild>
+            <Button>
+              <Upload className="h-4 w-4 mr-2" />
+              Upload CV
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Upload CV/Resume</DialogTitle>
+              <DialogDescription>
+                Upload your CV as a PDF or DOCX file to get AI-powered feedback
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div
+                className="border-2 border-dashed rounded-lg p-6 text-center cursor-pointer"
+                onDragOver={handleDragOver}
+                onDrop={handleDrop}
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  className="hidden"
+                  accept=".pdf,.docx"
+                  onChange={handleFileChange}
+                />
+                {!selectedFile ? (
+                  <div className="space-y-2">
+                    <FileText className="h-10 w-10 mx-auto text-muted-foreground" />
+                    <p className="text-sm font-medium">
+                      Drag and drop or click to upload
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      PDF or DOCX files only (max 5MB)
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <Check className="h-10 w-10 mx-auto text-green-500" />
+                    <p className="text-sm font-medium">{selectedFile.name}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {(selectedFile.size / (1024 * 1024)).toFixed(2)} MB
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+            <DialogFooter className="sm:justify-end">
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={() => {
+                  setSelectedFile(null);
+                  if (fileInputRef.current) fileInputRef.current.value = "";
+                  setIsUploadDialogOpen(false);
+                }}
+                disabled={isUploading}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="button"
+                onClick={handleFileUpload}
+                disabled={!selectedFile || isUploading}
+              >
+                {isUploading ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Uploading...
+                  </>
+                ) : (
+                  <>
+                    <Upload className="h-4 w-4 mr-2" />
+                    Upload
+                  </>
+                )}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
 
       {versions.length === 0 ? (
-        <Card className="border-dashed border-2">
-          <CardContent className="flex flex-col items-center justify-center py-12">
-            <FileX className="h-12 w-12 text-muted-foreground opacity-20 mb-4" />
-            <h3 className="text-lg font-medium mb-2">No CV versions yet</h3>
-            <p className="text-muted-foreground text-sm max-w-md text-center mb-6">
-              Upload your first CV to get started with formatting and
-              evaluation.
+        <Card className="border-dashed border-2 p-8">
+          <CardContent className="flex flex-col items-center justify-center p-6">
+            <FileX className="h-16 w-16 text-muted-foreground mb-4" />
+            <h3 className="text-xl font-semibold mb-2">No CV versions yet</h3>
+            <p className="text-center text-muted-foreground mb-4">
+              Upload your CV to get feedback and improve your chances
             </p>
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button onClick={() => setIsUploadDialogOpen(true)}>
-                  <Upload className="h-4 w-4 mr-2" />
-                  Upload Your First CV
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Upload CV/Resume</DialogTitle>
-                  <DialogDescription>
-                    Upload your current CV or resume. Supported formats: PDF,
-                    DOCX.
-                  </DialogDescription>
-                </DialogHeader>
-                <div className="py-6">
-                  <div
-                    className={`border-2 border-dashed rounded-lg p-12 flex flex-col items-center justify-center ${
-                      selectedFile ? "border-green-500 bg-green-50" : ""
-                    }`}
-                    onDragOver={handleDragOver}
-                    onDrop={handleDrop}
-                  >
-                    {selectedFile ? (
-                      <>
-                        <FileText className="h-12 w-12 text-green-500 mb-4" />
-                        <p className="mb-2 text-sm text-center font-medium">
-                          {selectedFile.name}
-                        </p>
-                        <p className="text-xs text-muted-foreground mb-4">
-                          {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
-                        </p>
-                        <Button
-                          variant="outline"
-                          onClick={() => {
-                            setSelectedFile(null);
-                            if (fileInputRef.current)
-                              fileInputRef.current.value = "";
-                          }}
-                        >
-                          Change File
-                        </Button>
-                      </>
-                    ) : (
-                      <>
-                        <FileText className="h-12 w-12 text-muted-foreground mb-4" />
-                        <p className="mb-2 text-sm text-center">
-                          Drag and drop your CV here, or click to browse
-                        </p>
-                        <p className="text-xs text-muted-foreground mb-4">
-                          PDF or DOCX, up to 5MB
-                        </p>
-                        <Button onClick={() => fileInputRef.current?.click()}>
-                          Select File
-                        </Button>
-                        <input
-                          type="file"
-                          accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                          ref={fileInputRef}
-                          className="hidden"
-                          onChange={handleFileChange}
-                        />
-                      </>
-                    )}
-                  </div>
-                </div>
-                <DialogFooter>
-                  <Button
-                    onClick={handleFileUpload}
-                    disabled={!selectedFile || isUploading}
-                  >
-                    {isUploading ? (
-                      <>
-                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                        Uploading...
-                      </>
-                    ) : (
-                      "Upload"
-                    )}
-                  </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
+            <Button onClick={() => setIsUploadDialogOpen(true)}>
+              <Upload className="h-4 w-4 mr-2" />
+              Upload CV
+            </Button>
           </CardContent>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 gap-6">
+        <div className="space-y-6">
           {versions.map((version) => (
             <Card key={version.id} className="overflow-hidden">
-              <CardHeader className="bg-muted/30 pb-4">
+              <CardHeader className="pb-3">
                 <div className="flex justify-between items-start">
                   <div>
-                    <CardTitle className="text-lg">{version.name}</CardTitle>
-                    <CardDescription className="mt-1">
-                      <div className="flex items-center">
-                        <Calendar className="h-3 w-3 mr-1" />
-                        <span className="text-xs">
-                          Last modified: {version.dateModified}
-                        </span>
-                      </div>
+                    <CardTitle className="text-xl">{version.name}</CardTitle>
+                    <CardDescription className="flex items-center mt-1">
+                      <Calendar className="h-3.5 w-3.5 mr-1" />
+                      Last updated: {version.dateModified}
                     </CardDescription>
                   </div>
-                  {version.score !== undefined && (
-                    <Badge variant="outline" className="bg-background">
-                      <div className="flex items-center">
-                        <Star
-                          className={`h-3 w-3 mr-1 ${scoreColor(
-                            version.score
-                          )}`}
-                        />
-                        <span
-                          className={`font-medium ${scoreColor(version.score)}`}
-                        >
-                          {version.score}/100
-                        </span>
-                      </div>
-                    </Badge>
-                  )}
+                  <Badge
+                    className={`${
+                      version.score >= 80
+                        ? "bg-green-100 text-green-800"
+                        : version.score >= 60
+                        ? "bg-yellow-100 text-yellow-800"
+                        : "bg-red-100 text-red-800"
+                    }`}
+                  >
+                    <Star className="h-3 w-3 mr-1" />
+                    Score: {version.score}/100
+                  </Badge>
                 </div>
               </CardHeader>
-              <CardContent className="pt-4">
-                {version.feedback && version.feedback.length > 0 && (
-                  <div className="mb-4">
-                    <h4 className="text-sm font-medium mb-2">
-                      AI Evaluation Feedback:
-                    </h4>
-                    <ScrollArea className="h-32 w-full rounded-md border p-2">
-                      <ul className="space-y-2">
-                        {version.feedback.map((item, index) => (
-                          <li key={index} className="flex items-start text-sm">
-                            {item.toLowerCase().includes("add") ||
-                            item.toLowerCase().includes("consider") ||
-                            item.toLowerCase().includes("improve") ? (
-                              <AlertTriangle className="h-4 w-4 text-yellow-500 mr-2 flex-shrink-0 mt-0.5" />
-                            ) : item.toLowerCase().includes("great") ||
-                              item.toLowerCase().includes("good") ||
-                              item.toLowerCase().includes("excellent") ? (
-                              <Check className="h-4 w-4 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
-                            ) : (
-                              <X className="h-4 w-4 text-red-500 mr-2 flex-shrink-0 mt-0.5" />
-                            )}
-                            <span>{item}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </ScrollArea>
-                    <div className="text-xs text-muted-foreground mt-1 flex justify-between">
-                      <span>AI-generated feedback based on CV analysis</span>
-                      {version.score !== undefined && (
-                        <span
-                          className={`font-medium ${scoreColor(version.score)}`}
-                        >
-                          Score: {version.score}/100
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                )}
-
-                <div className="flex space-x-2 mt-4">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="flex-1"
-                    onClick={() => handleDownload(version)}
-                  >
-                    <Download className="h-4 w-4 mr-2" />
-                    Download
-                  </Button>
-                  <Button variant="outline" size="sm" className="flex-1">
-                    <FileText className="h-4 w-4 mr-2" />
-                    Edit
-                  </Button>
-                  <Button
-                    variant="default"
-                    size="sm"
-                    className="flex-1"
-                    onClick={() => handleSendToMentor(version)}
-                    disabled={isSending}
-                  >
-                    {isSending ? (
-                      <>
-                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                        Sending...
-                      </>
-                    ) : (
-                      <>
-                        <Upload className="h-4 w-4 mr-2" />
-                        Send to Mentor
-                      </>
-                    )}
-                  </Button>
+              <CardContent className="pb-3">
+                <div className="border rounded-md p-3 bg-muted/20">
+                  <h4 className="text-sm font-medium mb-2">AI Feedback</h4>
+                  <ScrollArea className="h-24">
+                    <ul className="space-y-1">
+                      {version.feedback.map((point, i) => (
+                        <li key={i} className="text-sm flex">
+                          <span className="mr-2">•</span>
+                          <span>{point}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </ScrollArea>
                 </div>
               </CardContent>
-              <CardFooter className="bg-muted/20 border-t flex justify-between py-3">
-                <span className="text-xs text-muted-foreground">
-                  Created: {version.dateCreated}
-                </span>
-                <Button variant="ghost" size="sm" className="h-auto py-0">
-                  View Report
+              <CardFooter className="flex justify-between pt-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleDownload(version)}
+                >
+                  <Download className="h-4 w-4 mr-2" />
+                  Download
+                </Button>
+                <Button
+                  size="sm"
+                  onClick={() => handleSendToMentor(version)}
+                  disabled={isSending}
+                >
+                  {isSending ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Sending...
+                    </>
+                  ) : (
+                    <>
+                      <FileText className="h-4 w-4 mr-2" />
+                      Send to Mentor
+                    </>
+                  )}
                 </Button>
               </CardFooter>
             </Card>
