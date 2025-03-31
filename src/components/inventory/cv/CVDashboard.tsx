@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from "react";
 import { CVVersion } from "@/types/inventory";
 import {
@@ -61,11 +60,14 @@ const CVDashboard: React.FC<CVDashboardProps> = ({ cvVersions }) => {
       if (
         file.type !== "application/pdf" &&
         file.type !==
-          "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document" &&
+        file.type !== "application/msword" &&
+        file.type !== "application/x-tex" &&
+        !file.name.toLowerCase().endsWith(".tex")
       ) {
         toast({
           title: "Invalid file type",
-          description: "Please upload a PDF or DOCX file.",
+          description: "Please upload a PDF, DOC, DOCX, or TEX file.",
           variant: "destructive",
         });
         return;
@@ -102,11 +104,14 @@ const CVDashboard: React.FC<CVDashboardProps> = ({ cvVersions }) => {
       if (
         file.type !== "application/pdf" &&
         file.type !==
-          "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document" &&
+        file.type !== "application/msword" &&
+        file.type !== "application/x-tex" &&
+        !file.name.toLowerCase().endsWith(".tex")
       ) {
         toast({
           title: "Invalid file type",
-          description: "Please upload a PDF or DOCX file.",
+          description: "Please upload a PDF, DOC, DOCX, or TEX file.",
           variant: "destructive",
         });
         return;
@@ -320,7 +325,7 @@ const CVDashboard: React.FC<CVDashboardProps> = ({ cvVersions }) => {
                   type="file"
                   ref={fileInputRef}
                   className="hidden"
-                  accept=".pdf,.docx"
+                  accept=".pdf,.docx,.doc,.tex,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/msword,application/x-tex"
                   onChange={handleFileChange}
                 />
                 {!selectedFile ? (
@@ -330,7 +335,7 @@ const CVDashboard: React.FC<CVDashboardProps> = ({ cvVersions }) => {
                       Drag and drop or click to upload
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      PDF or DOCX files only (max 5MB)
+                      PDF, DOC, DOCX, or TEX files only (max 5MB)
                     </p>
                   </div>
                 ) : (
