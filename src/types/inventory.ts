@@ -1,3 +1,4 @@
+
 // Tool categories and their statuses
 export type ToolCategory = "lor" | "cv" | "sop" | "phs" | "language" | "gpa";
 export type ToolStatus = "not-started" | "in-progress" | "completed";
@@ -37,6 +38,8 @@ export interface CVVersion {
   fileUrl?: string;
   score?: number;
   feedback?: string[];
+  targetUniversity?: string;
+  targetProgram?: string;
 }
 
 // Statement of Purpose types
