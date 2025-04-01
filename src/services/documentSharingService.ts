@@ -6,8 +6,86 @@ import {
   RevisionNotification,
 } from "@/types/inventory";
 
-// Backend API endpoint
+// Backend API endpoint (not used in demo mode)
 const BACKEND_API = "http://localhost:3000/api";
+
+// Mock revision notifications for demo
+const MOCK_FEEDBACK_NOTIFICATIONS: RevisionNotification[] = [
+  {
+    id: "notification-1",
+    documentId: "doc-123",
+    documentName: "Stanford Psychology SoP",
+    mentorName: "Dr. Sarah Johnson",
+    date: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+    editsAccepted: 5,
+    commentsAdded: 3,
+    fileEdited: true,
+    isRead: false,
+    hasEditedFile: true,
+    editedFileUrl: "/api/documents/edited-files/sample-edited-doc.pdf",
+    fileUrl: "/api/documents/files/sample-original-doc.pdf",
+    feedbackComments:
+      "Great work overall! I've made some edits to improve clarity and structure. Please review the changes.",
+  },
+  {
+    id: "notification-2",
+    documentId: "doc-124",
+    documentName: "Berkeley CS CV",
+    mentorName: "Prof. Michael Williams",
+    date: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+    editsAccepted: 2,
+    commentsAdded: 7,
+    fileEdited: true,
+    isRead: true,
+    hasEditedFile: true,
+    editedFileUrl: "/api/documents/edited-files/sample-edited-cv.pdf",
+    fileUrl: "/api/documents/files/sample-original-cv.pdf",
+    feedbackComments:
+      "Your CV needs more focus on research experience. I've suggested several changes to highlight your technical skills better.",
+  },
+];
+
+// Mock document data
+const MOCK_DOCUMENT: DocumentData = {
+  id: "doc-123",
+  title: "Stanford Psychology SoP",
+  content:
+    "This Statement of Purpose outlines my academic journey and research interests in psychology. I am particularly interested in cognitive development in children and how early experiences shape learning outcomes. During my undergraduate studies, I conducted research on attention spans in preschoolers, which was published in the Journal of Developmental Psychology. I hope to continue this research at Stanford under the guidance of Dr. Elizabeth Chen, whose work on developmental milestones has greatly influenced my research direction.",
+  type: "Statement of Purpose",
+  studentName: "Demo Student",
+  studentId: "student-123",
+  mentorEdits: [
+    {
+      id: "edit-1",
+      text: "cognitive and social development",
+      originalText: "cognitive development",
+      position: { start: 120, end: 148 },
+      mentorName: "Dr. Sarah Johnson",
+      mentorId: "mentor-1",
+      timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+      fromSuggestion: true,
+    },
+    {
+      id: "edit-2",
+      text: "which was subsequently published",
+      originalText: "which was published",
+      position: { start: 300, end: 331 },
+      mentorName: "Dr. Sarah Johnson",
+      mentorId: "mentor-1",
+      timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+      fromSuggestion: false,
+    },
+  ],
+  status: "completed",
+  createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+  updatedAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+  targetProgram: "Psychology PhD",
+  targetUniversity: "Stanford University",
+  fileUrl: "/api/documents/files/sample-original-doc.pdf",
+  editedFileUrl: "/api/documents/edited-files/sample-edited-doc.pdf",
+  feedbackComments:
+    "Great work overall! I've made some edits to improve clarity and structure. Please review the changes.",
+};
 
 // Interface for document submission
 export interface DocumentSubmission {
@@ -46,11 +124,12 @@ export interface DocumentData {
   targetProgram?: string;
   targetUniversity?: string;
   fileUrl?: string;
+  editedFileUrl?: string;
   feedbackComments?: string;
 }
 
 /**
- * Send a document to the mentor dashboard for review
+ * Mock: Send a document to the mentor dashboard for review
  */
 export const sendDocumentToMentor = async (
   document: SoPVersion | CVVersion | PHSVersion,
@@ -59,14 +138,17 @@ export const sendDocumentToMentor = async (
   studentId: string = "student-123" // In a real app, you'd get this from auth
 ): Promise<{ success: boolean; message: string }> => {
   try {
-    // Prepare the document submission payload
+    // Simulate API delay
+    await new Promise((resolve) => setTimeout(resolve, 800));
+
+    // Prepare the document submission payload (just for logging)
     const submission: DocumentSubmission = {
       documentId: document.id,
       documentName: document.name,
       documentType,
       studentId,
       studentName,
-      fileUrl: document.fileUrl || "https://example.com/sample-document.pdf", // In real app, this would be actual URL
+      fileUrl: document.fileUrl || "/api/documents/files/mock-document.pdf",
       targetProgram:
         "targetProgram" in document ? document.targetProgram : undefined,
       targetUniversity:
@@ -74,55 +156,16 @@ export const sendDocumentToMentor = async (
       submissionDate: new Date().toISOString(),
     };
 
-    console.log("Sending document to mentor:", submission);
-    console.log("API URL:", `${BACKEND_API}/documents/student-submission`);
+    console.log("DEMO MODE: Sending document to mentor:", submission);
 
-    // Send to backend API - remove credentials option to avoid CORS issues
-    const response = await fetch(
-      `${BACKEND_API}/documents/student-submission`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(submission),
-      }
-    );
-
-    // Log raw response for debugging
-    console.log("Response status:", response.status, response.statusText);
-    const responseText = await response.text();
-    console.log("Raw response:", responseText);
-
-    // Parse the response if it's valid JSON
-    let result;
-    try {
-      result = JSON.parse(responseText);
-    } catch (parseError) {
-      console.error("Failed to parse response as JSON:", parseError);
-      throw new Error(
-        `Server returned invalid JSON: ${responseText.substring(0, 100)}...`
-      );
-    }
-
-    if (!response.ok) {
-      throw new Error(
-        result.message ||
-          `Server error: ${response.status} ${response.statusText}`
-      );
-    }
-
-    // Update document status if it's a SoP
+    // Update document status if it's a SoP or PHS
     if (documentType === "sop" && "sentToMentor" in document) {
       await updateSoPSentToMentor(
         document.id,
         true,
         "mentor-1" // Fixed mentor ID for this simple implementation
       );
-    }
-
-    // Update document status if it's a PHS
-    if (documentType === "phs" && "sentToMentor" in document) {
+    } else if (documentType === "phs" && "sentToMentor" in document) {
       await updatePHSSentToMentor(
         document.id,
         true,
@@ -132,10 +175,10 @@ export const sendDocumentToMentor = async (
 
     return {
       success: true,
-      message: "Document successfully sent to mentor for review",
+      message: "Document successfully sent to mentor for review (DEMO MODE)",
     };
   } catch (error) {
-    console.error("Error sending document to mentor:", error);
+    console.error("Error in demo document sending:", error);
     return {
       success: false,
       message:
@@ -145,59 +188,19 @@ export const sendDocumentToMentor = async (
 };
 
 /**
- * Check for document revisions from mentors
+ * Mock: Check for document revisions from mentors
  */
 export const checkForMentorFeedback = async (
   studentId: string = "student-123" // In a real app, you'd get this from auth
 ): Promise<RevisionNotification[]> => {
   try {
-    console.log("Checking for mentor feedback for student:", studentId);
-    console.log(
-      "API URL:",
-      `${BACKEND_API}/documents/notifications/${studentId}`
-    );
+    // Simulate API delay
+    await new Promise((resolve) => setTimeout(resolve, 500));
 
-    // Remove credentials option to avoid CORS issues
-    const response = await fetch(
-      `${BACKEND_API}/documents/notifications/${studentId}`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-
-    // Log raw response for debugging
-    console.log("Response status:", response.status, response.statusText);
-    const responseText = await response.text();
-    console.log("Raw response:", responseText);
-
-    // Only try to parse if we have content
-    if (responseText.trim()) {
-      try {
-        const result = JSON.parse(responseText);
-
-        if (!response.ok) {
-          throw new Error(
-            result.message ||
-              `Server error: ${response.status} ${response.statusText}`
-          );
-        }
-
-        return result.data || [];
-      } catch (parseError) {
-        console.error("Failed to parse response as JSON:", parseError);
-        throw new Error(
-          `Server returned invalid JSON: ${responseText.substring(0, 100)}...`
-        );
-      }
-    }
-
-    // Return empty array for empty responses
-    return [];
+    console.log("DEMO MODE: Returning mock feedback notifications");
+    return MOCK_FEEDBACK_NOTIFICATIONS;
   } catch (error) {
-    console.error("Error checking for mentor feedback:", error);
+    console.error("Error in demo feedback check:", error);
     return [];
   }
 };
@@ -222,19 +225,15 @@ export const markRevisionAsRead = async (
   revisionId: string
 ): Promise<{ success: boolean; message: string }> => {
   try {
-    // In a real implementation, this would be an actual API call to mark as read
-    // const response = await fetch(`${BACKEND_API}/document-revisions/${revisionId}/read`, {
-    //   method: "PUT",
-    // });
+    // Simulate API delay
+    await new Promise((resolve) => setTimeout(resolve, 300));
 
-    // if (!response.ok) {
-    //   throw new Error(`Failed to mark revision as read: ${response.statusText}`);
-    // }
+    console.log("DEMO MODE: Marking revision as read", revisionId);
 
     // Mock success
     return {
       success: true,
-      message: "Revision marked as read",
+      message: "Revision marked as read (DEMO MODE)",
     };
   } catch (error) {
     console.error("Error marking revision as read:", error);
@@ -330,29 +329,22 @@ const mockPHSVersions: PHSVersion[] = [
 ];
 
 /**
- * Get revised document details
+ * Mock: Get revised document details
  */
 export const getRevisedDocument = async (
   documentId: string
 ): Promise<{ success: boolean; document?: DocumentData; message: string }> => {
   try {
-    const response = await fetch(`${BACKEND_API}/documents/${documentId}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    // Simulate API delay
+    await new Promise((resolve) => setTimeout(resolve, 700));
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || "Failed to retrieve document");
-    }
+    console.log("DEMO MODE: Returning mock document data for ID:", documentId);
 
-    const result = await response.json();
+    // Return mock document data
     return {
       success: true,
-      document: result.data,
-      message: "Document retrieved successfully",
+      document: MOCK_DOCUMENT,
+      message: "Document retrieved successfully (DEMO MODE)",
     };
   } catch (error) {
     console.error("Error retrieving revised document:", error);

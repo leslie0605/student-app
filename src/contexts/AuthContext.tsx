@@ -5,7 +5,7 @@ import React, {
   useEffect,
   ReactNode,
 } from "react";
-import { getCurrentUser, clearCurrentUser } from "@/utils/api";
+import { setCurrentUser, clearCurrentUser } from "@/utils/api";
 import { useNavigate } from "react-router-dom";
 
 // Define the User type
@@ -16,6 +16,14 @@ export interface User {
   role: "student" | "mentor";
   avatar?: string;
 }
+
+// Mock user data for automatic login
+const MOCK_USER: User = {
+  id: "student-123",
+  name: "Demo Student",
+  email: "demo@student.edu",
+  role: "student",
+};
 
 // Define the AuthContext type
 interface AuthContextType {
@@ -45,35 +53,38 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Initialize auth state from localStorage
+  // Auto-login with mock user data
   useEffect(() => {
-    const loadUser = async () => {
+    const autoLogin = () => {
       try {
-        const currentUser = getCurrentUser();
-        if (currentUser) {
-          setUser(currentUser as User);
-        }
+        // Set mock user data
+        setUser(MOCK_USER);
+        setCurrentUser(MOCK_USER);
+        console.log("Auto-logged in with demo user:", MOCK_USER.name);
       } catch (error) {
-        console.error("Error loading user:", error);
-        clearCurrentUser();
+        console.error("Error during auto-login:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    loadUser();
+    // Automatically log in after a short delay to simulate authentication
+    const timer = setTimeout(autoLogin, 500);
+    return () => clearTimeout(timer);
   }, []);
 
-  // Logout function
+  // Logout function (resets to demo user instead of actually logging out)
   const logout = () => {
     clearCurrentUser();
-    setUser(null);
+    // Auto-login again with mock user after "logout"
+    setUser(MOCK_USER);
+    setCurrentUser(MOCK_USER);
   };
 
   // Auth context value
   const value = {
     user,
-    isAuthenticated: !!user,
+    isAuthenticated: true, // Always authenticated for demo purposes
     loading,
     logout,
     setUser,
@@ -82,17 +93,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
-// Higher-order component to protect routes that require authentication
+// Higher-order component that no longer requires real authentication
 export const withAuth = (Component: React.ComponentType) => {
   const AuthenticatedComponent: React.FC = (props) => {
-    const { isAuthenticated, loading } = useAuth();
-    const navigate = useNavigate();
-
-    useEffect(() => {
-      if (!loading && !isAuthenticated) {
-        navigate("/login");
-      }
-    }, [isAuthenticated, loading, navigate]);
+    const { loading } = useAuth();
 
     if (loading) {
       return (
@@ -102,7 +106,7 @@ export const withAuth = (Component: React.ComponentType) => {
       );
     }
 
-    return isAuthenticated ? <Component {...props} /> : null;
+    return <Component {...props} />;
   };
 
   return AuthenticatedComponent;

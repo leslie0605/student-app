@@ -4,9 +4,11 @@ import { BookOpen, User, Lock, LogIn, Loader2 } from "lucide-react";
 import { login, getCurrentUser } from "@/utils/api";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Login = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -17,6 +19,17 @@ const Login = () => {
     if (currentUser) {
       navigate("/");
     }
+  }, [navigate]);
+
+  useEffect(() => {
+    // Show a toast message about demo mode
+    toast.success("Demo Mode Active", {
+      description: "You've been automatically logged in as a demo student",
+      duration: 5000,
+    });
+
+    // Automatically redirect to home page
+    navigate("/");
   }, [navigate]);
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -85,109 +98,17 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-magic-light to-white">
-      <div className="w-full max-w-md p-8 rounded-xl glass-effect border border-magic-purple/20 shadow-lg">
-        <div className="flex flex-col items-center justify-center mb-8">
-          <div className="w-16 h-16 rounded-full bg-magic-purple/10 flex items-center justify-center mb-4">
-            <BookOpen className="h-8 w-8 text-magic-purple" />
-          </div>
-          <h1 className="text-2xl font-bold text-center">Magic Prep Quest</h1>
-          <p className="text-muted-foreground text-center mt-1">
-            Login to access your educational games
+    <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-sky-50 to-indigo-100 p-4">
+      <div className="w-full max-w-md space-y-8 rounded-xl bg-white p-8 shadow-lg">
+        <div className="text-center">
+          <h1 className="text-3xl font-bold text-gray-900">Magic Prep</h1>
+          <p className="mt-2 text-sm text-gray-600">
+            Demo Mode: Auto-redirecting...
           </p>
         </div>
 
-        <form onSubmit={handleLogin} className="space-y-4">
-          <div className="space-y-2">
-            <label htmlFor="email" className="text-sm font-medium">
-              Email
-            </label>
-            <div className="relative">
-              <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">
-                <User className="h-4 w-4" />
-              </div>
-              <input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="your.email@school.edu"
-                className={cn(
-                  "w-full py-2 pl-10 pr-4 rounded-lg bg-white/50 border border-magic-purple/20",
-                  "focus:outline-none focus:ring-2 focus:ring-magic-purple focus:border-transparent"
-                )}
-              />
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <label htmlFor="password" className="text-sm font-medium">
-              Password
-            </label>
-            <div className="relative">
-              <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">
-                <Lock className="h-4 w-4" />
-              </div>
-              <input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-                className={cn(
-                  "w-full py-2 pl-10 pr-4 rounded-lg bg-white/50 border border-magic-purple/20",
-                  "focus:outline-none focus:ring-2 focus:ring-magic-purple focus:border-transparent"
-                )}
-              />
-            </div>
-          </div>
-
-          <button
-            type="submit"
-            disabled={isLoading}
-            className={cn(
-              "w-full py-3 rounded-lg font-medium transition-all-200 shadow-md",
-              "bg-gradient-to-r from-magic-blue to-magic-purple text-white",
-              "hover:shadow-lg hover:translate-y-[-2px]",
-              "flex items-center justify-center gap-2",
-              isLoading && "opacity-70 cursor-not-allowed"
-            )}
-          >
-            {isLoading ? (
-              <>
-                <Loader2 className="h-4 w-4 animate-spin" />
-                Logging in...
-              </>
-            ) : (
-              <>
-                <LogIn className="h-4 w-4" />
-                Login
-              </>
-            )}
-          </button>
-        </form>
-
-        <div className="mt-8">
-          <p className="text-sm text-center text-muted-foreground mb-4">
-            Quick Login as Demo Student
-          </p>
-          <div className="grid grid-cols-2 gap-2">
-            {demoStudents.map((student) => (
-              <button
-                key={student.id}
-                type="button"
-                onClick={() => loginAsDemoStudent(student)}
-                disabled={isLoading}
-                className={cn(
-                  "text-xs py-2 px-3 rounded-lg border border-magic-purple/20 bg-white/70",
-                  "hover:bg-magic-purple/10 transition-colors",
-                  isLoading && "opacity-50 cursor-not-allowed"
-                )}
-              >
-                {student.name}
-              </button>
-            ))}
-          </div>
+        <div className="mt-8 flex justify-center">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-r-transparent"></div>
         </div>
       </div>
     </div>

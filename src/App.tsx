@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -7,6 +7,7 @@ import {
 } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "sonner";
+import { toast } from "sonner";
 import Index from "@/pages/Index";
 import NotFound from "@/pages/NotFound";
 import QuizSelection from "@/pages/QuizSelection";
@@ -39,6 +40,26 @@ const ProtectedMatchingGame = withAuth(MatchingGame);
 const ProtectedFlashcardGame = withAuth(FlashcardGame);
 
 function App() {
+  // Display demo mode notification
+  useEffect(() => {
+    setTimeout(() => {
+      toast(
+        <div className="demo-toast">
+          <span className="font-bold">🚀 Demo Mode Active</span>
+          <p className="text-sm mt-1">
+            This app is running in demo mode with mock data. Backend connection
+            not required.
+          </p>
+        </div>,
+        {
+          duration: 6000,
+          position: "top-center",
+          className: "demo-notification",
+        }
+      );
+    }, 1500);
+  }, []);
+
   return (
     <AuthProvider>
       <QueryClientProvider client={queryClient}>

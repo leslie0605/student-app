@@ -1,23 +1,50 @@
-# Welcome to your Lovable project
+# Magic Prep - Student Application Platform
 
-## Project deployed link
+## Demo Mode (No Backend Required)
 
-**URL**: https://lovable.dev/projects/1a8eefaa-61ec-43de-9621-52de0cf06e3f
+This version of the application runs in **Demo Mode** with mock data, so you don't need to set up or connect to a backend server.
 
-## To run the program on your local machine
+### Features Available in Demo Mode:
 
-### Step 1: Clone the repository using the project's Git URL.
+- **University Browser**: Browse and search universities
+- **Document Creation**: Create CV, SoP, and PHS documents
+- **Mentor Feedback**: View simulated mentor feedback on your documents
+- **University Bucket**: Add universities to your bucket and track application deadlines
+- **Educational Games**: Play quizzes and educational games
 
-git clone <YOUR_GIT_URL>
+## Quick Start
 
-### Step 2: Navigate to the project directory.
+1. Clone the repository
+2. Install dependencies
+   ```bash
+   npm install
+   # or
+   yarn
+   ```
+3. Run the development server
+   ```bash
+   npm run dev
+   # or
+   yarn dev
+   ```
+4. Open [http://localhost:5173](http://localhost:5173) in your browser
 
-cd <YOUR_PROJECT_NAME>
+## Important Notes
 
-### Step 3: Install the necessary dependencies.
+- You will be automatically logged in as a demo student
+- All data is simulated and stored in memory - changes will be lost on page refresh
+- Uploading files works, but they aren't actually sent to a backend
+- The mentor dashboard integration is simulated with pre-defined responses
 
-npm i
+## Technology Stack
 
-### Step 4: Start the development server with auto-reloading and an instant preview.
+- React + TypeScript
+- Vite
+- TailwindCSS
+- shadcn/ui components
+- React Router for navigation
+- Context API for state management
 
-npm run dev
+## Acknowledgments
+
+This project was created as part of the Stanford HAI initiative.
